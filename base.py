@@ -2,7 +2,9 @@ from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+# NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
 app = Flask(__name__)
+
 
 # Function that's ran when accessing index page
 @app.route("/")

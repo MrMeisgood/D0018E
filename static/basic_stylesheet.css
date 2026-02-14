@@ -1,0 +1,34 @@
+:root {
+    --bg-base: hsl(0 0% 6%);
+    --bg-middle: hsl(0 0% 11%);
+    --bg-top: hsl(0 0% 16%);
+    --focused-text: hsl(0 0% 95%);
+    --text: hsl(0 0% 60%);
+    --unfocused-text: hsl(0 0% 50%);
+    --font: "Roboto Mono", monospace, Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text);
+    font-family: var(--font);
+}
+
+h1 {
+    color: var(--focused-text);
+}
+
+button {
+    background: var(--bg-middle);
+    padding: 0.5rem 1rem 0.7rem 1rem;
+    color: var(--text);
+    font-weight: 700;
+    border-radius: 8px;
+    border: none;
+    transition-duration: 0.2s;
+}
+
+button:hover {
+    color: var(--focused-text);
+    background-color: var(--bg-top);
+}
