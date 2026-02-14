@@ -10,6 +10,11 @@
         <h1>The plating boiled text</h1>
         <p>Smaller but <i>chiller</i> text</p>
         <button onclick="add-to-cart">Add to cart</button>
+        <form method="POST" action="/add_user">
+            <input type="text" name="username" placeholder="Enter username" required>
+            <input type="text" name="password" placeholder="Enter password" required>
+            <button type="submit">Add user</button>
+        </form>
         <button onclick="remove-from-cart">Remove from cart</button>
     </div>
 </section>
