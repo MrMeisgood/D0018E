@@ -1,17 +1,26 @@
+@font-face {
+    font-family: "Minecraft Font";
+    src: url("/static/minecraft-font/MinecraftRegular-Bmg3.otf") format("truetype"),
+        url("/static/minecraft-font/MinecraftBold-nMK1.otf") format("truetype"),
+        url("/static/minecraft-font/MinecraftItalic-R8Mo.otf") format("truetype"),
+        url("/static/minecraft-font/MinecraftBoldItalic-1y1e.otf") format("truetype");
+}
+
 :root {
-    --bg-base: hsl(0 0% 6%);
-    --bg-middle: hsl(0 0% 11%);
+    --bg-base: hsla(0, 0%, 6%, 0.5);
+    --bg-middle: hsla(0, 0%, 11%, 0.75);
     --bg-top: hsl(0 0% 16%);
     --focused-text: hsl(0 0% 95%);
     --text: hsl(0 0% 60%);
     --unfocused-text: hsl(0 0% 50%);
-    --font: "Roboto Mono", monospace, Arial, Helvetica, sans-serif;
+    --font: "Minecraft Font", Arial, Helvetica, sans-serif;
 }
 
 body {
     background-color: var(--bg-base);
-    color: var(--text);
+    color: var(--focused-text);
     font-family: var(--font);
+    z-index: 1;
 }
 
 h1 {
@@ -26,9 +35,32 @@ button {
     border-radius: 8px;
     border: none;
     transition-duration: 0.2s;
+    font-family: "Minecraft Font";
+    z-index: 1;
 }
 
 button:hover {
     color: var(--focused-text);
     background-color: var(--bg-top);
+}
+
+.upper-background {
+    top: 0;
+    left: 0;
+    height: 128px;
+    width: 100%;
+    z-index: -1;
+    position: absolute;
+    background-image: url("/static/images/dirt_2x.png");
+    background-position: top center;
+}
+
+.lower-background {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    position: absolute;
+    background-image: url("/static/images/stone_2x.png");
 }

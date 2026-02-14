@@ -2,9 +2,6 @@
 <html lang="en">
 <head>
     <link rel="stylesheet", href="/static/basic_stylesheet.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-quiv="X-UA-Compatible" content="ie=edge">
@@ -12,7 +9,11 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+    <div class="lower-background">
+        <div class="upper-background"></div>
+    </div>
     <!-- This whole thing is litterally just boilerplate I stole from a youtube video. It'll be changed later-->
     {% block body %}{% endblock %} 
+    <p>Prominently include the disclaimer similar to the following: “NOT AN OFFICIAL MINECRAFT [PRODUCT/SERVICE/EVENT/etc.]. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT” on your product, listing, description, website/webpage, and all other related materials</p>
 </body>
 </html>
