@@ -9,22 +9,24 @@
 :root {
     /* When you need a lighter background, just use a higher transparency (lower last value) */
     --bg-base: hsla(0, 0%, 0%, 0.75);
+    --bg-middle: hsla(0, 0%, 0%, 0.5);
+    --bg-top: hsla(0, 0%, 0%, 0.0);
     --bg-button: hsl(35, 95%, 54%);
     --bg-button-hover: hsl(34, 94%, 66%);
     --focused-text: hsl(0 0% 95%);
     --text: hsl(0 0% 60%);
     --unfocused-text: hsl(0 0% 50%);
+    --sign-text: hsl(0 0% 35%);
     --font: "Minecraft Font", Arial, Helvetica, sans-serif;
 }
 
 /* NOTE: for the love of all that is holy, please, please don't EVER touch the z-index*/
-
 body {
     color: var(--text);
     font-family: var(--font);
     background-image: 
         linear-gradient(var(--bg-base), var(--bg-base)), 
-        url("/static/images/stone_2x.png");
+        url("/static/images/blocks/stone.png");
     top: 0;
     left: 0;
     margin: 0%;
@@ -75,15 +77,16 @@ input {
             hsla(0, 0%, 0%, 0.5) 30%,        
             hsla(0, 0%, 0%, 0.75) 90%  
         ), 
-        url("/static/images/dirt_2x.png");
+        url("/static/images/blocks/dirt.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
 }
 
 .below-header {
-    height: 100vh;
     display: flex;
     flex-direction: column;
+    margin-left: 15pt;
+    margin-right: 15pt;
 }
 
 .margins {
@@ -93,8 +96,39 @@ input {
 
 .main {
     flex: 0 0 97%;
-    margin-left: 15pt;
-    margin-right: 15pt;
+}
+
+.store-frame {
+    width: 100%;
+    display: table;
+    border-collapse: seperate;
+    border-spacing: 15pt;
+    background-image: 
+        linear-gradient(var(--bg-middle), var(--bg-middle)),
+        url("images/blocks/log.png");
+    background-repeat: repeat;
+    background-size: 60pt, 60pt;
+    background-blend-mode: multiply;
+}
+
+.store-row {
+    display: table-row;
+}
+
+.store-cell {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    background-image: 
+        linear-gradient(var(--bg-top), var(--bg-top)),
+        url("images/blocks/planks.png");
+    background-repeat: repeat;
+    background-size: 60pt, 60pt;
+    color: black;
+    font-weight: 250;
+    font-size: large;
+    padding: 15pt;
+    background-blend-mode: multiply;
 }
 
 .disclaimer {
