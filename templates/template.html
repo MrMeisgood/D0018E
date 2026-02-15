@@ -9,11 +9,18 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <div class="lower-background">
-        <div class="upper-background"></div>
+    <div class="header">
+        <div class="margins">
+            <!-- The header -->
+            {% block header %}{% endblock %}
+        </div>
     </div>
-    <!-- This whole thing is litterally just boilerplate I stole from a youtube video. It'll be changed later-->
-    {% block body %}{% endblock %} 
-    <p>Prominently include the disclaimer similar to the following: “NOT AN OFFICIAL MINECRAFT [PRODUCT/SERVICE/EVENT/etc.]. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT” on your product, listing, description, website/webpage, and all other related materials</p>
+    <div class="below-header">
+        <div class="main">
+            <!-- Main block -->
+            {% block body %}{% endblock %} 
+        </div>
+        <div class="disclaimer">NOT AN OFFICIAL MINECRAFT [PRODUCT/SERVICE/EVENT/etc.]. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</div>
+    </div>
 </body>
 </html>
