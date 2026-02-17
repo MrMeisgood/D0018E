@@ -10,9 +10,11 @@
 </head>
 <body>
     <div class="header">
-        <div class="margins">
-            <!-- The header -->
-            {% block header %}{% endblock %}
+        <a href="{{ url_for('index') }}"><button><h1>Villager store</h1></button></a>
+        <div style="margin-left: 17vw;">
+            <a href="{{ url_for('login') }}">Login</a>
+            <span> | </span>
+            <a href="{{ url_for('register') }}">Register</a>
         </div>
     </div>
     <div class="below-header">

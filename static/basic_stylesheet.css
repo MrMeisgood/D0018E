@@ -80,6 +80,16 @@ input {
         url("/static/images/blocks/dirt.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
+    text-align: center;
+}
+
+.header button {
+    padding-left: 15pt;
+    padding-right: 15pt;
+    flex: 1 1 100pt;
+    background-color: hsla(0, 0%, 0%, 0);
+    border: none;
+    font-family: var(--font);
 }
 
 .below-header {
@@ -129,6 +139,7 @@ input {
     font-size: large;
     padding: 15pt;
     background-blend-mode: multiply;
+    line-height: 2.3;
 }
 
 .disclaimer {

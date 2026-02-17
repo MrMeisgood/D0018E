@@ -1,23 +1,10 @@
 {% extends "template.html" %}
 
 {% block head %}
-<title> Villager Store </title>
-{% endblock %}
-
-{% block header %}
-<h1>Villager store</h1>
+<title>Villager Store</title>
 {% endblock %}
 
 {% block body %}
-    <p>Smaller but <i>chiller</i> text</p>
-    <form method="POST" action="/add_user">
-        <input type="text" name="username" placeholder="Enter username" required>
-        <input type="text" name="password" placeholder="Enter password" required>
-        <button type="submit" class="orange">Add user</button>
-    </form>
-    <br><br>
-    <button onclick="add-to-cart" class="orange">Add to cart</button>
-    <button onclick="remove-from-cart" class="orange">Remove from cart</button>
     <br><br>
     <div class="store-frame">
         <div class="store-row">
@@ -35,7 +22,9 @@
             <div class="store-cell">
                 <!-- Ahh yes, very highres -->
                 <img src="/static/images/items/emerald.png" height=100% Width=100%>
-                <br><br>This is where the items go!!!<br><br>
+                <button onclick="add-to-cart" class="orange">Add to cart</button>
+                <br>
+                <button onclick="remove-from-cart" class="orange">Remove from cart</button>
             </div>
             <div class="store-cell">
                 <br><br>This is where the items go!!!<br><br>

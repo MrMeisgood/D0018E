@@ -7,11 +7,12 @@ def get_conn():
     return psycopg2.connect(
         host = "localhost",
         port = 5433,
-        database = "Store",
+        database = "store",
         user = "postgres",
         password = "postgres",
     )
 
+# NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
 # NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
 app = Flask(__name__)
 
@@ -19,13 +20,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhos
 
 db=SQLAlchemy(app)
 
-
-# Function that's ran when accessing index page
+# Pages:
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
 
+@app.route("/register")
+def register():
+    return render_template("register.html")
+
+# Queries:
 @app.route('/add_user', methods=['POST'])
 def add_user():
     uname= request.form["username"]
