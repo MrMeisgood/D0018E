@@ -6,43 +6,18 @@
 
 {% block body %}
     <br><br>
-    <div class="store-frame">
-        <div class="store-row">
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-        </div>
-        <div class="store-row">
-            <div class="store-cell">
-                <!-- Ahh yes, very highres -->
-                <img src="/static/images/items/emerald.png" height=100% Width=100%>
-                <button onclick="add-to-cart" class="orange">Add to cart</button>
+    <div class="store-grid">
+        <!-- I think we should limit the amount of items that get loaded in at least until scrolling
+        but this seems to work for now. -->
+        {% for item in items %}
+            <div class="store-item">
+                <img src="/static/images/items/items/{{ item['type'] }}-{{ item['meta'] }}.png">
                 <br>
-                <button onclick="remove-from-cart" class="orange">Remove from cart</button>
+                <p>{{ item['name'] }}</p>
+                <!-- These buttons don't fit at all, but they're fine for now -->
+                <button class="orange">Add</button>
+                <button class="orange">Remove</button>
             </div>
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-        </div>
-        <div class="store-row">
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-            <div class="store-cell">
-                <br><br>This is where the items go!!!<br><br>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 {% endblock %}

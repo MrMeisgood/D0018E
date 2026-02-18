@@ -16,7 +16,6 @@
     --focused-text: hsl(0 0% 95%);
     --text: hsl(0 0% 60%);
     --unfocused-text: hsl(0 0% 50%);
-    --sign-text: hsl(0 0% 35%);
     --font: "Minecraft Font", Arial, Helvetica, sans-serif;
 }
 
@@ -57,7 +56,7 @@ button.orange:hover {
 }
 
 input {
-    color: var(--focused-text);
+    color: black;
     font-family: var(--font);
 }
 
@@ -108,43 +107,41 @@ input {
     flex: 0 0 97%;
 }
 
-.store-frame {
-    width: 100%;
-    display: table;
-    border-collapse: seperate;
-    border-spacing: 15pt;
+.disclaimer {
+    display: flex;
+    flex: 0 0 3%;
+    justify-content: center;
+    align-items: center;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120pt, 1fr));
+    gap: 20px;
+    padding: 20px;
+    /* Can't decide between transparent: */
+    /* background-color: hsla(0, 0%, 0%, 0); */
+    /* Or logs: */
     background-image: 
         linear-gradient(var(--bg-middle), var(--bg-middle)),
         url("images/blocks/log.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
-    background-blend-mode: multiply;
 }
 
-.store-row {
-    display: table-row;
-}
-
-.store-cell {
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
+.store-item {
+    text-align: center;  
+    padding: 10px;
     background-image: 
         linear-gradient(var(--bg-top), var(--bg-top)),
         url("images/blocks/planks.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
     color: black;
-    font-weight: 250;
-    font-size: large;
-    padding: 15pt;
-    background-blend-mode: multiply;
-    line-height: 2.3;
 }
 
-.disclaimer {
-    display: flex;
-    flex: 0 0 3%;
-    justify-content: center;
-    align-items: center;
+.store-item img {
+    /* Don't move outside the box!!! */
+    max-width: 100%;
+    height:auto;
 }

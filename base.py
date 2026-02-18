@@ -1,12 +1,13 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request as flask_request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import psycopg2
+import requests
 
 def get_conn():
     return psycopg2.connect(
         host = "localhost",
-        port = 5433,
+        port = 5432,
         database = "store",
         user = "postgres",
         password = "postgres",
@@ -16,14 +17,15 @@ def get_conn():
 # NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/Store'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/store'
 
 db=SQLAlchemy(app)
 
 # Pages:
 @app.route("/")
 def index():
-    return render_template("index.html")
+    items = get_all_items()
+    return render_template("index.html", items=items)
 
 @app.route("/login")
 def login():
@@ -36,8 +38,8 @@ def register():
 # Queries:
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    uname= request.form["username"]
-    passw= request.form["password"]
+    uname= flask_request.form["username"]
+    passw= flask_request.form["password"]
 
     conn = get_conn()
     cur = conn.cursor()
@@ -51,6 +53,27 @@ def add_user():
     cur.close()
     conn.close()
     return "User created!"
+
+# Api 
+# I kinda feel like it'll just be simpler to store the json locally
+def get_all_items():
+    url = "http://minecraft-ids.grahamedgecombe.com/items.json"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "Accept": "application/json"
+    }
+    # I feel like this is unnecessary, but I'll leave it for now.
+    while True:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data =  response.json()
+            return data
+        elif response.status_code == 202:
+            print("Proccessing... \n\n")
+        else:
+            response.raise_for_status()
+            print("\n\n GUH!!! \n\n")
+            break
 
 # Main
 if __name__ == "__main__":
