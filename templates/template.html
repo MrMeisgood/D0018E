@@ -12,9 +12,12 @@
     <div class="header">
         <a href="{{ url_for('index') }}"><button><h1>Villager store</h1></button></a>
         <div style="margin-left: 17vw;">
-            <a href="{{ url_for('login') }}">Login</a>
-            <span> | </span>
-            <a href="{{ url_for('register') }}">Register</a>
+            <h1> Welcome {{ name }}!</h1>
+            <!-- <a href="{{ url_for('login') }}">Login</a> -->
+            <!-- <span> | </span> -->
+            <!-- <a href="{{ url_for('register') }}">Register</a> -->
+            <!-- <span> | </span> -->
+            <a href="{{ url_for('logout') }}">Logout</a>
         </div>
     </div>
     <div class="below-header">

@@ -57,7 +57,7 @@ button.orange:hover {
 }
 
 input {
-    color: var(--focused-text);
+    color: black;
     font-family: var(--font);
 }
 
