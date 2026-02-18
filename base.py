@@ -7,7 +7,7 @@ def get_conn():
     return psycopg2.connect(
         host = "localhost",
         port = 5433,
-        database = "store",
+        database = "Store",
         user = "postgres",
         password = "postgres",
     )
@@ -36,21 +36,27 @@ def register():
 # Queries:
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    uname= request.form["username"]
-    passw= request.form["password"]
+    try:
+        uname= request.form["username"]
+        passw= request.form["password"]
 
-    conn = get_conn()
-    cur = conn.cursor()
 
-    cur.execute(
-        "INSERT INTO users (name, password) VALUES (%s, %s)",
-        (uname, passw)
-    )
+        conn = get_conn()
+        cur = conn.cursor()
 
-    conn.commit()
-    cur.close()
-    conn.close()
-    return "User created!"
+        cur.execute(
+            "INSERT INTO users (name, password) VALUES (%s, %s)",
+            (uname, passw)
+        )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for('login'))
+    except psycopg2.errors.UniqueViolation:
+        print("Dont copy someones homework homeboy")
+        return redirect(url_for('register'))
+
 
 # Main
 if __name__ == "__main__":
