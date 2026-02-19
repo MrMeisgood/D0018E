@@ -7,18 +7,10 @@ from flask import (
     redirect,
 )
 from flask_sqlalchemy import SQLAlchemy
+
+from connection_config import get_conn
 import psycopg2
 import requests
-
-
-def get_conn():
-    return psycopg2.connect(
-        host="localhost",
-        port=5432,
-        database="store",
-        user="postgres",
-        password="postgres",
-    )
 
 
 # NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
