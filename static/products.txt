@@ -689,7 +689,7 @@
 (434, 0, 'Beetroot'), 
 (435, 0, 'Beetroot Seeds'), 
 (436, 0, 'Beetroot Soup'), 
-(437, 0, 'Dragon's Breath'), 
+(437, 0, 'Dragons Breath'), 
 (438, 0, 'Splash Potion'), 
 (439, 0, 'Spectral Arrow'), 
 (440, 0, 'Tipped Arrow'), 

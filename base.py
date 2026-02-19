@@ -27,7 +27,7 @@ db = SQLAlchemy(app)
 # Pages:
 @app.route("/", methods=["GET", "POST"])
 def index():
-    items = get_items()
+    items = product()
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
@@ -81,6 +81,18 @@ def add_user():
         print("Dont copy someones homework homeboy")
         return redirect(url_for("register"))
 
+# @app.route("/product", methods=["GET","POST"])
+def product():
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM products"
+        )
+        prod_records = cur.fetchall()
+        return prod_records
+    except Exception:
+        return "ERROR at PRODUCT"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -113,9 +125,6 @@ def initial_insert():
     cur.close()
     conn.close()
 
-
-
-
 # Api
 # I kinda feel like it'll just be simpler to store the json locally
 def get_items():
@@ -128,26 +137,26 @@ def get_items():
     # Only return 30 random items
     data = response.json()
     return data
-    # return random.sample(data, min(30, len(data)))
+    return random.sample(data, min(30, len(data)))
 
 # Used to convert the api request to a query (horrible way though)
-def convert():
-    query = ""
-    data = get_items()
-    for item in data:
-        query += "("
-        for key, value in item.items():
-            if key == "name":
-                query += "'" + str(value) + "'"
-            elif key != "text_type":
-                query += str(value) + ", "
-        query = query + "), \n"
-    with open('static/products.txt', "w") as file:
-        file.write(query)
+# def convert():
+#     query = ""
+#     data = get_items()
+#     for item in data:
+#         query += "("
+#         for key, value in item.items():
+#             if key == "name":
+#                 query += "'" + str(value) + "'"
+#             elif key != "text_type":
+#                 query += str(value) + ", "
+#         query = query + "), \n"
+#     with open('static/products.txt', "w") as file:
+#         file.write(query)
 
 
 # Main
 if __name__ == "__main__":
     # convert()
-    initial_insert()
+    # initial_insert()
     app.run(debug=True, host="0.0.0.0", port=4444)

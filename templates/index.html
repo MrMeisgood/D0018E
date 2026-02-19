@@ -21,9 +21,9 @@
         but this seems to work for now. -->
         {% for item in items %}
             <div class="store-item">
-                <img src="/static/images/items/{{ item['type'] }}-{{ item['meta'] }}.png">
+                <img src="/static/images/items/{{ item[1] }}-{{ item[2] }}.png">
                 <br>
-                <p>{{ item['name'] }}</p>
+                <p>{{ item[3] }}</p>
                 <!-- These buttons don't fit at all, but they're fine for now -->
                 <button class="orange">Add</button>
                 <button class="orange">Remove</button>
