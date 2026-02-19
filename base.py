@@ -23,11 +23,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhos
 
 db = SQLAlchemy(app)
 
-
-# Pages:
+# --- Pages ---
 @app.route("/", methods=["GET", "POST"])
 def index():
-    items = product()
+    items = return_n_random(product(), 30)
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
@@ -59,7 +58,7 @@ def register():
 def cart():
     return render_template("cart.html")
 
-# Queries:
+# --- Queries ---
 @app.route("/add_user", methods=["POST"])
 def add_user():
     try:
@@ -81,19 +80,6 @@ def add_user():
         print("Dont copy someones homework homeboy")
         return redirect(url_for("register"))
 
-# @app.route("/product", methods=["GET","POST"])
-def product():
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(
-            "SELECT * FROM products"
-        )
-        prod_records = cur.fetchall()
-        return prod_records
-    except Exception:
-        return "ERROR at PRODUCT"
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask_request.method == "POST":
@@ -112,11 +98,11 @@ def login():
             return redirect(url_for("login")), "Invalid Username or Password"
     return render_template("login.html")
 
+# --- Helpers ---
+# Funciton used for filling the products table.
 def initial_insert():
-    query = "INSERT INTO products (ptype, pmeta, pname) VALUES"
     with open("static/products.txt", "r") as file:
-        text = file.read()
-    query += text
+        query = file.read()
 
     conn = get_conn()
     cur = conn.cursor()
@@ -125,8 +111,7 @@ def initial_insert():
     cur.close()
     conn.close()
 
-# Api
-# I kinda feel like it'll just be simpler to store the json locally
+# Get's all items and their corresponding names from the api below.
 def get_items():
     url = "http://minecraft-ids.grahamedgecombe.com/items.json"
     headers = {
@@ -134,26 +119,41 @@ def get_items():
         "Accept": "application/json",
     }
     response = requests.get(url, headers=headers)
-    # Only return 30 random items
     data = response.json()
     return data
-    return random.sample(data, min(30, len(data)))
 
-# Used to convert the api request to a query (horrible way though)
-# def convert():
-#     query = ""
-#     data = get_items()
-#     for item in data:
-#         query += "("
-#         for key, value in item.items():
-#             if key == "name":
-#                 query += "'" + str(value) + "'"
-#             elif key != "text_type":
-#                 query += str(value) + ", "
-#         query = query + "), \n"
-#     with open('static/products.txt', "w") as file:
-#         file.write(query)
+# Takes an array and returns n random items of the initial array.
+def return_n_random(array, n):
+    return random.sample(array, min(n, len(array)))
 
+# Fetches all products from database
+def product():
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM products"
+        )
+        prod_records = cur.fetchall()
+        return prod_records
+    except Exception:
+        return "ERROR at PRODUCT"
+
+# Used to convert the api request to a query 
+def convert():
+    query = "INSERT INTO products (ptype, pmeta, pname) VALUES"
+    data = get_items()
+    for item in data:
+        query += "("
+        for key, value in item.items():
+            if key == "name":
+                query += "'" + str(value).replace("'","''") + "'"
+            elif key != "text_type":
+                query += str(value) + ", "
+        query = query + "),\n"
+    query = query[:-2] + ";"
+    with open('static/products.txt', "w") as file:
+        file.write(query)
 
 # Main
 if __name__ == "__main__":
