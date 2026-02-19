@@ -9,17 +9,21 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <div class="header">
-        <a href="{{ url_for('index') }}"><button><h1>Villager store</h1></button></a>
-        {% block header %}{% endblock %}
-    </div>
+    <header>
+        <div class="margins">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><button><h1>Villager store</h1></button></a>
+            </div>
+            {% block header %}{% endblock %}
+        </div>
+    </header>
     <div class="below-header">
         <div class="main">
             <!-- Main block -->
             {% block body %}{% endblock %} 
         </div>
         <br><br><br>
-        <div class="disclaimer">NOT AN OFFICIAL MINECRAFT [PRODUCT/SERVICE/EVENT/etc.]. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</div>
+        <div class="disclaimer">Not an official minecraft webiste. We are not approved by or associated with Mojang or Microsoft.</div>
     </div>
 </body>
 </html>

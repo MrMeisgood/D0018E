@@ -11,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from connection_config import get_conn
 import psycopg2
 import requests
+import random
 
 
 # NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
@@ -26,19 +27,11 @@ db = SQLAlchemy(app)
 # Pages:
 @app.route("/")
 def index():
-    items = get_all_items()
+    items = get_items()
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
     return render_template("index.html", name=username, items=items)
-
-
-# @app.route("/home")
-# def home():
-#     username = session.get('name', None)
-#     if username == None:
-#         return redirect(url_for('login'))
-#     return render_template("index.html", name=username)
 
 
 @app.route("/logout")
@@ -53,6 +46,10 @@ def register():
     return render_template("register.html")
 
 
+@app.route("/cart")
+def cart():
+    return render_template("cart.html")
+
 # Queries:
 @app.route("/add_user", methods=["POST"])
 def add_user():
@@ -64,7 +61,7 @@ def add_user():
         cur = conn.cursor()
 
         cur.execute(
-            "INSERT INTO users (name, password) VALUES (%s, %s)", (uname, passw)
+            "INSERT INTO users (username, password) VALUES (%s, %s)", (uname, passw)
         )
 
         conn.commit()
@@ -97,24 +94,16 @@ def login():
 
 # Api
 # I kinda feel like it'll just be simpler to store the json locally
-def get_all_items():
+def get_items():
     url = "http://minecraft-ids.grahamedgecombe.com/items.json"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
         "Accept": "application/json",
     }
-    # I feel like this is unnecessary, but I'll leave it for now.
-    while True:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            return data
-        elif response.status_code == 202:
-            print("Proccessing... \n\n")
-        else:
-            response.raise_for_status()
-            print("\n\n GUH!!! \n\n")
-            break
+    response = requests.get(url, headers=headers)
+    # Only return 30 random items
+    data = response.json()
+    return random.sample(data, min(30, len(data)))
 
 
 # Main

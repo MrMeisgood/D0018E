@@ -60,13 +60,10 @@ input {
     font-family: var(--font);
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    top: 0;
-    left: 0;
+header {
+    display: block;
     height: 60pt;
-    width: 100%;
+    width: 100vw;
     position: sticky;
     background-image:
         linear-gradient(
@@ -79,26 +76,57 @@ input {
         url("/static/images/blocks/dirt.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
-    text-align: center;
 }
 
-.header button {
-    padding-left: 15pt;
-    padding-right: 15pt;
-    flex: 1 1 100pt;
+header .margins {
+    height: 100%;
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    color: var(--focused-text);
+    height: 100%;
+    font-size: 50px;
+}
+
+header .logo button {
+    height: 100%;
     background-color: hsla(0, 0%, 0%, 0);
     border: none;
     font-family: var(--font);
+    align-items: center;
+}
+
+header .welcome {
+    height: 100%;
+    font-size: 150%;
+    align-items: center;
+    color: var(--focused-text);
+}
+
+header nav {
+    height: 100%;
+}
+
+header nav li{
+    display: table;
+    height: 100%;
+    float: left;
+    margin-right: 30px;
+}
+
+header nav span {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .below-header {
     display: flex;
     flex-direction: column;
-    margin-left: 15pt;
-    margin-right: 15pt;
-}
-
-.margins {
     margin-left: 15pt;
     margin-right: 15pt;
 }
@@ -119,9 +147,6 @@ input {
     grid-template-columns: repeat(auto-fill, minmax(120pt, 1fr));
     gap: 20px;
     padding: 20px;
-    /* Can't decide between transparent: */
-    /* background-color: hsla(0, 0%, 0%, 0); */
-    /* Or logs: */
     background-image: 
         linear-gradient(var(--bg-middle), var(--bg-middle)),
         url("images/blocks/log.png");

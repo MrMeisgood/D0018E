@@ -5,14 +5,13 @@
 {% endblock %}
 
 {% block header %}
-  <div style="margin-left: 17vw;">
-    <h1> Welcome {{ name }}!</h1>
-    <!-- <a href="{{ url_for('login') }}">Login</a> -->
-    <!-- <span> | </span> -->
-    <!-- <a href="{{ url_for('register') }}">Register</a> -->
-    <!-- <span> | </span> -->
-    <a href="{{ url_for('logout') }}">Logout</a>
-  </div>
+<div class="welcome">
+    <p> Welcome {{ name }}!</p>
+</div>
+<nav>
+    <li><span><a href="{{ url_for('logout') }}">Logout</a></span></li>
+    <li><span><a href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
+</nav>
 {% endblock %}
 
 {% block body %}
@@ -22,7 +21,7 @@
         but this seems to work for now. -->
         {% for item in items %}
             <div class="store-item">
-                <img src="/static/images/items/items/{{ item['type'] }}-{{ item['meta'] }}.png">
+                <img src="/static/images/items/{{ item['type'] }}-{{ item['meta'] }}.png">
                 <br>
                 <p>{{ item['name'] }}</p>
                 <!-- These buttons don't fit at all, but they're fine for now -->
