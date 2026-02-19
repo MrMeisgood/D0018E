@@ -59,10 +59,6 @@ def register():
 def cart():
     return render_template("cart.html")
 
-@app.route("/cart")
-def cart():
-    return render_template("cart.html")
-
 # Queries:
 @app.route("/add_user", methods=["POST"])
 def add_user():
@@ -104,6 +100,21 @@ def login():
             return redirect(url_for("login")), "Invalid Username or Password"
     return render_template("login.html")
 
+def initial_insert():
+    query = "INSERT INTO products (ptype, pmeta, pname) VALUES"
+    with open("static/products.txt", "r") as file:
+        text = file.read()
+    query += text
+
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(query)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+
 
 # Api
 # I kinda feel like it'll just be simpler to store the json locally
@@ -116,9 +127,27 @@ def get_items():
     response = requests.get(url, headers=headers)
     # Only return 30 random items
     data = response.json()
-    return random.sample(data, min(30, len(data)))
+    return data
+    # return random.sample(data, min(30, len(data)))
+
+# Used to convert the api request to a query (horrible way though)
+def convert():
+    query = ""
+    data = get_items()
+    for item in data:
+        query += "("
+        for key, value in item.items():
+            if key == "name":
+                query += "'" + str(value) + "'"
+            elif key != "text_type":
+                query += str(value) + ", "
+        query = query + "), \n"
+    with open('static/products.txt', "w") as file:
+        file.write(query)
 
 
 # Main
 if __name__ == "__main__":
+    # convert()
+    initial_insert()
     app.run(debug=True, host="0.0.0.0", port=4444)
