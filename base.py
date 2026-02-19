@@ -1,4 +1,11 @@
-from flask import Flask, render_template, request as flask_request
+from flask import (
+    Flask,
+    render_template,
+    request as flask_request,
+    session,
+    url_for,
+    redirect,
+)
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
 import requests
@@ -7,8 +14,8 @@ import requests
 def get_conn():
     return psycopg2.connect(
         host="localhost",
-        port=5432,
-        database="store",
+        port=5433,
+        database="Store",
         user="postgres",
         password="postgres",
     )
@@ -17,6 +24,7 @@ def get_conn():
 # NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
 # NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
 app = Flask(__name__)
+app.secret_key = "sixsevensixsevensixseven"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost/store"
 
@@ -27,12 +35,25 @@ db = SQLAlchemy(app)
 @app.route("/")
 def index():
     items = get_all_items()
-    return render_template("index.html", items=items)
+    username = session.get("name", None)
+    if username == None:
+        return redirect(url_for("login"))
+    return render_template("index.html", name=username, items=items)
 
 
-@app.route("/login")
-def login():
-    return render_template("login.html")
+# @app.route("/home")
+# def home():
+#     username = session.get('name', None)
+#     if username == None:
+#         return redirect(url_for('login'))
+#     return render_template("index.html", name=username)
+
+
+@app.route("/logout")
+def logout():
+    for key in list(session.keys()):
+        session.pop(key)
+    return redirect(url_for("index"))
 
 
 @app.route("/register")
@@ -43,18 +64,43 @@ def register():
 # Queries:
 @app.route("/add_user", methods=["POST"])
 def add_user():
-    uname = flask_request.form["username"]
-    passw = flask_request.form["password"]
+    try:
+        uname = flask_request.form["username"]
+        passw = flask_request.form["password"]
 
-    conn = get_conn()
-    cur = conn.cursor()
+        conn = get_conn()
+        cur = conn.cursor()
 
-    cur.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (uname, passw))
+        cur.execute(
+            "INSERT INTO users (name, password) VALUES (%s, %s)", (uname, passw)
+        )
 
-    conn.commit()
-    cur.close()
-    conn.close()
-    return "User created!"
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for("index"))
+    except psycopg2.errors.UniqueViolation:
+        print("Dont copy someones homework homeboy")
+        return redirect(url_for("register"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if flask_request.method == "POST":
+        uname = flask_request.form["username"]
+        passw = flask_request.form["password"]
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE name = %s", (uname,))
+        user_record = cur.fetchone()
+        if user_record:
+            id, name, password, isadmin = user_record
+            if str(password) == passw:
+                session["id"] = id
+                session["name"] = name
+                return redirect(url_for("index"))
+            return redirect(url_for("login")), "Invalid Username or Password"
+    return render_template("login.html")
 
 
 # Api
@@ -82,4 +128,3 @@ def get_all_items():
 # Main
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=4444)
-
