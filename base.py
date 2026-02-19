@@ -14,8 +14,8 @@ import requests
 def get_conn():
     return psycopg2.connect(
         host="localhost",
-        port=5433,
-        database="Store",
+        port=5432,
+        database="store",
         user="postgres",
         password="postgres",
     )
@@ -36,7 +36,7 @@ db = SQLAlchemy(app)
 def index():
     items = get_all_items()
     username = session.get("name", None)
-    if username == None:
+    if not username:
         return redirect(url_for("login"))
     return render_template("index.html", name=username, items=items)
 
@@ -91,7 +91,7 @@ def login():
         passw = flask_request.form["password"]
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE name = %s", (uname,))
+        cur.execute("SELECT * FROM users WHERE username = %s", (uname,))
         user_record = cur.fetchone()
         if user_record:
             id, name, password, isadmin = user_record
