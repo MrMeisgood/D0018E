@@ -7,11 +7,16 @@
 {% block header %}
   <div style="margin-left: 17vw;">
     <h1> Welcome {{ name }}!</h1>
-    <!-- <a href="{{ url_for('login') }}">Login</a> -->
-    <!-- <span> | </span> -->
-    <!-- <a href="{{ url_for('register') }}">Register</a> -->
-    <!-- <span> | </span> -->
+  </div>
+  <div style="margin-left: 34vw;">
     <a href="{{ url_for('logout') }}">Logout</a>
+  </div>
+  <div>
+    <a href="/cart">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+        </svg>
+    </a>
   </div>
 {% endblock %}
 
@@ -21,14 +26,18 @@
         <!-- I think we should limit the amount of items that get loaded in at least until scrolling
         but this seems to work for now. -->
         {% for item in items %}
-            <div class="store-item">
-                <img src="/static/images/items/items/{{ item['type'] }}-{{ item['meta'] }}.png">
-                <br>
-                <p>{{ item['name'] }}</p>
-                <!-- These buttons don't fit at all, but they're fine for now -->
-                <button class="orange">Add</button>
-                <button class="orange">Remove</button>
-            </div>
+            <form method="POST">
+                <div class="store-item">
+                    <img src="/static/images/items/items/{{ item['type'] }}-{{ item['meta'] }}.png">
+                    <br>
+                    <p>{{ item['name'] }}</p>
+                    <!-- These buttons don't fit at all, but they're fine for now -->
+                    <!-- <button class="orange">Add</button> -->
+                    <!-- <button class="orange">Remove</button> -->
+                    <input type="hidden" value="{{ item['type'] }}" name="item_id">
+                    <input type="submit" value="Add to Cart" class="orange">
+                </div>
+            </form>
         {% endfor %}
     </div>
 {% endblock %}

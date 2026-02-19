@@ -24,13 +24,24 @@ db = SQLAlchemy(app)
 
 
 # Pages:
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
     items = get_all_items()
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
+    if flask_request.method == "POST":
+        try:
+            item_id = flask_request.form.get("item_id", None)
+            conn = get_conn()
+            cur = conn.cursor()
+            cur.execute(
+            "SELECT item_id FROM cart"
+            )
+        except Exception:
+            return "ERROR HERE"
     return render_template("index.html", name=username, items=items)
+
 
 
 # @app.route("/home")
@@ -52,7 +63,7 @@ def logout():
 def register():
     return render_template("register.html")
 
-@app.route("/cart")
+@app.route("/cart", methods=["GET","POST"])
 def cart():
     return render_template("cart.html")
 
@@ -67,7 +78,7 @@ def add_user():
         cur = conn.cursor()
 
         cur.execute(
-            "INSERT INTO users (name, password) VALUES (%s, %s)", (uname, passw)
+            "INSERT INTO users (username, password) VALUES (%s, %s)", (uname, passw)
         )
 
         conn.commit()
@@ -111,7 +122,7 @@ def get_all_items():
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             data = response.json()
-            return data
+            return data[:49]
         elif response.status_code == 202:
             print("Proccessing... \n\n")
         else:
