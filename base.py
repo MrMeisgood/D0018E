@@ -45,6 +45,9 @@ def logout():
 def register():
     return render_template("register.html")
 
+@app.route("/cart")
+def cart():
+    return render_template("cart.html")
 
 @app.route("/cart")
 def cart():
