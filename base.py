@@ -25,12 +25,22 @@ db = SQLAlchemy(app)
 
 
 # Pages:
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
     items = get_items()
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
+    if flask_request.method == "POST":
+        try:
+            item_id = flask_request.form.get("item_id", None)
+            conn = get_conn()
+            cur = conn.cursor()
+            cur.execute(
+            "SELECT item_id FROM cart"
+            )
+        except Exception:
+            return "ERROR HERE"
     return render_template("index.html", name=username, items=items)
 
 
@@ -45,7 +55,7 @@ def logout():
 def register():
     return render_template("register.html")
 
-@app.route("/cart")
+@app.route("/cart", methods=["GET","POST"])
 def cart():
     return render_template("cart.html")
 
