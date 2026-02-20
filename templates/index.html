@@ -22,13 +22,11 @@
             <div class="store-item">
                 <img class="item" src="/static/images/items/{{ item[1] }}-{{ item[2] }}.png">
                 <p class="text" >{{ item[3] }}</p>
-                <!-- index0 just means number of loop, e.g first loop has 0 -->
-                <div class="price-text">{{ rand_array[loop.index0] }}<img class="price" src="/static/images/items/388-0.png"></div>
+                <div class="price-text">{{ item[4] }}<img class="price" src="/static/images/items/388-0.png"></div>
                 <!-- These buttons don't fit at all, but they're fine for now -->
-                <!-- Index for button to make things easier later. -->
                 <span>
-                <button class="orange" id="{{ loop.index0 }}">Add</button>
-                <button class="orange" id="{{ loop.index0 }}">Remove</button>
+                <button class="orange" id="{{ item[0] }}">Add</button>
+                <button class="orange" id="{{ item[0] }}">Remove</button>
                 </span>
             </div>
         {% endfor %}

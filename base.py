@@ -13,9 +13,9 @@ import psycopg2
 import requests
 import random
 
-DISPLAYED_ITEMS = 30
 LOWEST_PRICE = 1
 HIGHEST_PRICE = 50
+DISPLAYED_ITEMS = 30
 
 # NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
 # NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
@@ -32,9 +32,7 @@ db = SQLAlchemy(app)
 @app.route("/", methods=["GET", "POST"])
 def index():
     # Fetch items and generate random price
-    items = return_n_random(product(), DISPLAYED_ITEMS)
-    rand_array = get_rand_array(LOWEST_PRICE, HIGHEST_PRICE, DISPLAYED_ITEMS)
-    print(rand_array)
+    items = product()[:30]
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
@@ -48,9 +46,7 @@ def index():
             return "ERROR HERE"
     # Since we have the price array here aswell it should be easy to just add it
     # when adding the product to cart.
-    return render_template(
-        "index.html", name=username, items=items, rand_array=rand_array
-    )
+    return render_template("index.html", name=username, items=items)
 
 
 @app.route("/logout")
@@ -138,19 +134,6 @@ def get_items():
     return data
 
 
-# Takes an array and returns n random items of the initial array.
-def return_n_random(array, n):
-    return random.sample(array, min(n, len(array)))
-
-
-# Returns an array of n random integers with a value between low and high
-def get_rand_array(low, high, n):
-    array = []
-    for i in range(n):
-        array.insert(i, random.randint(low, high))
-    return array
-
-
 # Fetches all products from database
 def product():
     try:
@@ -165,13 +148,18 @@ def product():
 
 # Used to convert the api request to a query
 def convert():
-    query = "INSERT INTO products (ptype, pmeta, pname) VALUES"
+    query = "INSERT INTO products (ptype, pmeta, pname, price) VALUES"
     data = get_items()
     for item in data:
         query += "("
         for key, value in item.items():
             if key == "name":
-                query += "'" + str(value).replace("'", "''") + "'"
+                query += (
+                    "'"
+                    + str(value).replace("'", "''")
+                    + "', "
+                    + str(random.randint(LOWEST_PRICE, HIGHEST_PRICE))
+                )
             elif key != "text_type":
                 query += str(value) + ", "
         query = query + "),\n"

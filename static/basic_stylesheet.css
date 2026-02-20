@@ -181,14 +181,14 @@ header nav a:visited {
 }
 
 .store-item {
-  text-align: center;
-  padding: 10px;
-  background-image:
-      linear-gradient(var(--bg-top), var(--bg-top)),
-      url("images/blocks/planks.png");
-  background-repeat: repeat;
-  background-size: 60pt, 60pt;
-  color: black;
+    text-align: center;
+    padding: 10px;
+    background-image:
+        linear-gradient(var(--bg-top), var(--bg-top)),
+        url("images/blocks/planks.png");
+    background-repeat: repeat;
+    background-size: 60pt, 60pt;
+    color: black;
 }
 
 .store-item .text {
