@@ -139,12 +139,12 @@ header nav span {
     justify-content: center;
 }
 
-header nav a {
+a {
     color: hsl(236, 88%, 80%);
     text-decoration: none;
 }
 
-header nav a:visited {
+a:visited {
     color: hsl(236, 88%, 80%);
     text-decoration: none;
 }
