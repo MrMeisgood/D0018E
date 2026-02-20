@@ -15,6 +15,7 @@ import random
 
 LOWEST_PRICE = 1
 HIGHEST_PRICE = 50
+# Please note that the max for this one is 719
 DISPLAYED_ITEMS = 30
 
 # NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
@@ -32,7 +33,7 @@ db = SQLAlchemy(app)
 @app.route("/", methods=["GET", "POST"])
 def index():
     # Fetch items and generate random price
-    items = product()[:30]
+    items = product()[:DISPLAYED_ITEMS]
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
