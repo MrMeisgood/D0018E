@@ -8,6 +8,7 @@
 
 :root {
     /* When you need a lighter background, just use a higher transparency (lower last value) */
+    /* Gradients for shading on background and wood  */
     --bg-base: hsla(0, 0%, 0%, 0.75);
     --bg-middle: hsla(0, 0%, 0%, 0.5);
     --bg-top: hsla(0, 0%, 0%, 0.0);
@@ -132,6 +133,16 @@ header nav li{
 header nav span {
     display: table-cell;
     vertical-align: middle;
+}
+
+header nav a {
+    color: hsl(236, 88%, 80%);
+    text-decoration: none;
+}
+
+header nav a:visited {
+    color: hsl(236, 88%, 80%);
+    text-decoration: none;
 }
 
 .below-header {
