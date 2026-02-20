@@ -1,0 +1,18 @@
+import psycopg2
+
+# This is a sample file for the database settings. 
+# To use it, simply change the values below and change the file extension to .py
+
+def get_conn():
+    return psycopg2.connect(
+        # Host ip
+        host="localhost",
+        # Port
+        port=5432,
+        # Database name
+        database="store",
+        # Your postgres user
+        user="postgres",
+        # Password for your postgres user
+        password="postgres",
+    )

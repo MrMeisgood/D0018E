@@ -162,6 +162,7 @@ header nav span {
         url("images/blocks/log.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
+    line-height: 200%;
 }
 
 .store-item {
@@ -173,10 +174,22 @@ header nav span {
     background-repeat: repeat;
     background-size: 60pt, 60pt;
     color: black;
+    font-weight: 500;
 }
 
-.store-item img {
-    /* Don't move outside the box!!! */
-    max-width: 100%;
-    height:auto;
+.store-item .price-text {
+    width: 100%;
+    color: hsl(143, 88%, 60%);
+    /* from https://stackoverflow.com/questions/4919076/outline-effect-to-text */
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.store-item .price {
+    height: 16px;
+}
+
+.store-item .item {
+    /* We might want to make a script that upscales the images or do it some other way, 
+    they're just too small */
+    width: 32px;
 }

@@ -13,20 +13,28 @@ import psycopg2
 import requests
 import random
 
+DISPLAYED_ITEMS = 30
+LOWEST_PRICE = 1
+HIGHEST_PRICE = 50
 
 # NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
 # NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
 app = Flask(__name__)
 app.secret_key = "sixsevensixsevensixseven"
 
+
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost/store"
 
 db = SQLAlchemy(app)
 
+
 # --- Pages ---
 @app.route("/", methods=["GET", "POST"])
 def index():
-    items = return_n_random(product(), 30)
+    # Fetch items and generate random price
+    items = return_n_random(product(), DISPLAYED_ITEMS)
+    rand_array = get_rand_array(LOWEST_PRICE, HIGHEST_PRICE, DISPLAYED_ITEMS)
+    print(rand_array)
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
@@ -35,12 +43,12 @@ def index():
             item_id = flask_request.form.get("item_id", None)
             conn = get_conn()
             cur = conn.cursor()
-            cur.execute(
-            "SELECT item_id FROM cart"
-            )
+            cur.execute("SELECT item_id FROM cart")
         except Exception:
             return "ERROR HERE"
-    return render_template("index.html", name=username, items=items)
+    # Since we have the price array here aswell it should be easy to just add it 
+    # when adding the product to cart.
+    return render_template("index.html", name=username, items=items, rand_array=rand_array)
 
 
 @app.route("/logout")
@@ -54,9 +62,11 @@ def logout():
 def register():
     return render_template("register.html")
 
-@app.route("/cart", methods=["GET","POST"])
+
+@app.route("/cart", methods=["GET", "POST"])
 def cart():
     return render_template("cart.html")
+
 
 # --- Queries ---
 @app.route("/add_user", methods=["POST"])
@@ -80,6 +90,7 @@ def add_user():
         print("Dont copy someones homework homeboy")
         return redirect(url_for("register"))
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask_request.method == "POST":
@@ -98,6 +109,7 @@ def login():
             return redirect(url_for("login")), "Invalid Username or Password"
     return render_template("login.html")
 
+
 # --- Helpers ---
 # Funciton used for filling the products table.
 def initial_insert():
@@ -111,6 +123,7 @@ def initial_insert():
     cur.close()
     conn.close()
 
+
 # Get's all items and their corresponding names from the api below.
 def get_items():
     url = "http://minecraft-ids.grahamedgecombe.com/items.json"
@@ -122,24 +135,31 @@ def get_items():
     data = response.json()
     return data
 
+
 # Takes an array and returns n random items of the initial array.
 def return_n_random(array, n):
     return random.sample(array, min(n, len(array)))
+
+# Returns an array of n random integers with a value between low and high
+def get_rand_array(low, high, n):
+    array = []
+    for i in range(n):
+        array.insert(i, random.randint(low, high))
+    return array
 
 # Fetches all products from database
 def product():
     try:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(
-            "SELECT * FROM products"
-        )
+        cur.execute("SELECT * FROM products")
         prod_records = cur.fetchall()
         return prod_records
     except Exception:
         return "ERROR at PRODUCT"
 
-# Used to convert the api request to a query 
+
+# Used to convert the api request to a query
 def convert():
     query = "INSERT INTO products (ptype, pmeta, pname) VALUES"
     data = get_items()
@@ -147,12 +167,12 @@ def convert():
         query += "("
         for key, value in item.items():
             if key == "name":
-                query += "'" + str(value).replace("'","''") + "'"
+                query += "'" + str(value).replace("'", "''") + "'"
             elif key != "text_type":
                 query += str(value) + ", "
         query = query + "),\n"
     query = query[:-2] + ";"
-    with open('static/products.txt', "w") as file:
+    with open("static/products.txt", "w") as file:
         file.write(query)
 
 # Main
