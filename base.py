@@ -46,9 +46,11 @@ def index():
             cur.execute("SELECT item_id FROM cart")
         except Exception:
             return "ERROR HERE"
-    # Since we have the price array here aswell it should be easy to just add it 
+    # Since we have the price array here aswell it should be easy to just add it
     # when adding the product to cart.
-    return render_template("index.html", name=username, items=items, rand_array=rand_array)
+    return render_template(
+        "index.html", name=username, items=items, rand_array=rand_array
+    )
 
 
 @app.route("/logout")
@@ -140,12 +142,14 @@ def get_items():
 def return_n_random(array, n):
     return random.sample(array, min(n, len(array)))
 
+
 # Returns an array of n random integers with a value between low and high
 def get_rand_array(low, high, n):
     array = []
     for i in range(n):
         array.insert(i, random.randint(low, high))
     return array
+
 
 # Fetches all products from database
 def product():
@@ -174,6 +178,7 @@ def convert():
     query = query[:-2] + ";"
     with open("static/products.txt", "w") as file:
         file.write(query)
+
 
 # Main
 if __name__ == "__main__":
