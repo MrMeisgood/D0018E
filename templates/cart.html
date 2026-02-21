@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block header %}
+<div class="welcome">
+    <p> Welcome {{ username }}!</p>
+</div>
 {% endblock %}
 
 {% block body %}
@@ -18,17 +21,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td> 
-                        1
-                    </td>
-                    <td> 
-                        2
-                    </td>
-                    <td> 
-                        3
-                    </td>
-                </tr>
+                {% for product in product_array %}
+                    <tr>
+                        <td>
+                            <img src="/static/images/items/{{ product[0] }}-{{ product[1] }}.png">
+                        </td>
+                        <td>
+                            {{ product[2] }}
+                        </td>
+                        <td>
+                          {{ product[3] }}
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

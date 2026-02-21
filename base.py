@@ -41,18 +41,25 @@ def index():
             # Connect to database
             conn = get_conn()
             cur = conn.cursor()
-            # Get user_id
-            cur.execute("SELECT users_id FROM users WHERE username = %s", (username))
-            user_id = cur.fetchone()[0]
+            # Get user_id (note that we expect the user to be signed in)
+            user_id = session.get("id", None)
             # Check if product already exists in in_cart
-            print(product_id, user_id)
-            cur.execute("SELECT * FROM in_cart WHERE product_id = %s AND users_id = %s", (product_id, user_id))
+            cur.execute(
+                "SELECT * FROM in_cart WHERE product_id = %s AND users_id = %s",
+                (product_id, user_id),
+            )
             test = cur.fetchone()
             # Adds to in_cart or increases quantity
             if test:
-                cur.execute("UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND users_id = %s", (product_id, user_id))
+                cur.execute(
+                    "UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND users_id = %s",
+                    (product_id, user_id),
+                )
             else:
-                cur.execute("INSERT INTO in_cart (users_id, product_id, quantity) VALUES (%s, %s, 1);", (user_id, product_id))
+                cur.execute(
+                    "INSERT INTO in_cart (users_id, product_id, quantity) VALUES (%s, %s, 1);",
+                    (user_id, product_id),
+                )
             conn.commit()
             cur.close()
             conn.close()
@@ -77,7 +84,28 @@ def register():
 
 @app.route("/cart", methods=["GET", "POST"])
 def cart():
-    return render_template("cart.html")
+    username = session.get("name", None)
+    user_id = session.get("id", None)
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT product_id, quantity FROM in_cart WHERE users_id = %s",
+        (user_id,),
+    )
+    products = cur.fetchall()
+    product_array = []
+    for product in products:
+        cur.execute(
+            "SELECT pname, ptype, pmeta, price FROM products WHERE product_id = %s",
+            (product[0],),
+        )
+        # We know this is not None since we get it from the database
+        temp = cur.fetchone()
+        # Inserts (ptype, pmeta, pname, price * quantity)
+        product_array.append((temp[1], temp[2], temp[0], product[1] * temp[3]))
+    cur.close()
+    conn.close()
+    return render_template("cart.html", username=username, product_array=product_array)
 
 
 # --- Queries ---
