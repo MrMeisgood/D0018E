@@ -177,7 +177,6 @@ a:visited {
         url("images/blocks/log.png");
     background-repeat: repeat;
     background-size: 60pt, 60pt;
-    line-height: 200%;
 }
 
 .store-item {
@@ -198,22 +197,55 @@ a:visited {
     font-weight: 500;
 }
 
-.store-item .price-text {
-    height: 34px;
-    width: 100%;
+.price-text {
     color: hsl(143, 88%, 60%);
     /* from https://stackoverflow.com/questions/4919076/outline-effect-to-text */
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
-.store-item .price {
+.price {
     transform: translateY(+2px);
     height: 16px;
-    margin-right: 8%;
 }
 
 .store-item .item {
     /* We might want to make a script that upscales the images or do it some other way, 
     they're just too small */
     width: 32px;
+}
+
+.cart-fixer {
+    height: 100%;
+    width; 100%;
+    display: grid;
+    place-items: center;
+}
+
+.cart-table {
+    display: table;
+    border-spacing: 15px;
+    width: 800px;
+    background-image:
+        linear-gradient(var(--bg-middle), var(--bg-middle)),
+        url("images/blocks/log.png");
+    background-repeat: repeat;
+    background-size: 60pt, 60pt;
+}
+
+.cart-row {
+    display: table-row;
+    padding: 10px;
+    background-image:
+        linear-gradient(var(--bg-top), var(--bg-top)),
+        url("images/blocks/planks.png");
+    background-repeat: repeat;
+    background-size: 60pt, 60pt;
+    color: black;
+}
+
+.cart-cell {
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+    padding: 10px;
 }

@@ -6,35 +6,38 @@
 
 {% block header %}
 <div class="welcome">
-    <p> Welcome {{ username }}!</p>
+    <p> Here's your cart {{ username }}!</p>
 </div>
 {% endblock %}
 
 {% block body %}
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in product_array %}
-                    <tr>
-                        <td>
-                            <img src="/static/images/items/{{ product[0] }}-{{ product[1] }}.png">
-                        </td>
-                        <td>
-                            {{ product[2] }}
-                        </td>
-                        <td>
-                          {{ product[3] }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <br><br>
+    <div class="cart-fixer">
+        <div class="cart-table">
+            <div class="cart-row">
+                <div class="cart-cell">
+                    <b>Product</b>
+                </div>
+                <div class="cart-cell">
+                    <b>Name</b>
+                </div>
+                <div class="cart-cell">
+                    <b>Price</b>
+                </div>
+            </div>
+            {% for product in product_array %}
+                <div class="cart-row">
+                    <div class="cart-cell">
+                        <img src="/static/images/items/{{ product[0] }}-{{ product[1] }}.png">
+                    </div>
+                    <div class="cart-cell">
+                       {{ product[2] }}
+                    </div>
+                    <div class="cart-cell">
+                        <p class="price-text">{{ product[3] }}<img class="price" src="/static/images/items/388-0.png"></p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
