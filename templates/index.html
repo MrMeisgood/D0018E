@@ -22,12 +22,13 @@
             <div class="store-item">
                 <img class="item" src="/static/images/items/{{ item[1] }}-{{ item[2] }}.png">
                 <p class="text" >{{ item[3] }}</p>
-                <div class="price-text">{{ item[4] }}<img class="price" src="/static/images/items/388-0.png"></div>
+                <form method="post">
+                    <div class="price-text">
+                        {{ item[4] }}<img class="price" src="/static/images/items/388-0.png">
+                        <button type="submit" class="orange" name="item_id" value="{{ item[0] }}">Buy</button>
+                    </div>
+                </form>
                 <!-- These buttons don't fit at all, but they're fine for now -->
-                <span>
-                <button class="orange" id="{{ item[0] }}">Add</button>
-                <button class="orange" id="{{ item[0] }}">Remove</button>
-                </span>
             </div>
         {% endfor %}
     </div>

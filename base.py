@@ -32,21 +32,31 @@ db = SQLAlchemy(app)
 # --- Pages ---
 @app.route("/", methods=["GET", "POST"])
 def index():
-    # Fetch items and generate random price
-    items = get_products()[:DISPLAYED_ITEMS]
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
     if flask_request.method == "POST":
         try:
-            item_id = flask_request.form.get("item_id", None)
+            product_id = flask_request.form.get("item_id", None)
+            # Connect to database
             conn = get_conn()
             cur = conn.cursor()
-            cur.execute("SELECT item_id FROM cart")
+            # Get user_id
+            # NOTE: This is where things go wrong, check with Anton if the issue is obvious
+            cur.execute("SELECT user_id FROM users WHERE username = %s", (username))
+            user_id = cur.fetchone()
+            print(user_id)
+            # Check if product already exists
+            cur.execute("SELECT * FROM products WHERE product_id = %s AND users_id = %s", (product_id, user_id))
+            item = cur.fetchone()
+            if item:
+                cur.execute("UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND users_id = %s", (product_id, user_id))
+            else:
+                cur.execute("INSERT INTO in_cart (users_id, product_id, quantity) VALUES (%s, %s, 1)", (user_id, product_id))
         except Exception:
             return "ERROR HERE"
-    # Since we have the price array here aswell it should be easy to just add it
-    # when adding the product to cart.
+    # Doesn't get items till we actually know they're needed
+    items = get_products()[:DISPLAYED_ITEMS]
     return render_template("index.html", name=username, items=items)
 
 
