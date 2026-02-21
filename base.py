@@ -33,7 +33,7 @@ db = SQLAlchemy(app)
 @app.route("/", methods=["GET", "POST"])
 def index():
     # Fetch items and generate random price
-    items = product()[:DISPLAYED_ITEMS]
+    items = get_products()[:DISPLAYED_ITEMS]
     username = session.get("name", None)
     if not username:
         return redirect(url_for("login"))
@@ -136,11 +136,11 @@ def get_items():
 
 
 # Fetches all products from database
-def product():
+def get_products():
     try:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM products")
+        cur.execute("SELECT product_id, ptype, pmeta, pname, price FROM products")
         prod_records = cur.fetchall()
         return prod_records
     except Exception:
@@ -172,5 +172,5 @@ def convert():
 # Main
 if __name__ == "__main__":
     # convert()
-    # initial_insert()
+    initial_insert()
     app.run(debug=True, host="0.0.0.0", port=4444)
