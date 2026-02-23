@@ -9,9 +9,9 @@
     <p> Welcome {{ name }}!</p>
 </div>
 <nav>
-    <li><span><a href="{{ url_for('logout') }}">Log out</a></span></li>
+    <li><span><a class="blue" href="{{ url_for('logout') }}">Log out</a></span></li>
     <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
-    <li><span><a href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
+    <li><span><a class="blue" href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
 </nav>
 {% endblock %}
 
@@ -20,8 +20,10 @@
     <div class="store-grid">
         {% for item in items %}
             <div class="store-item">
-                <img class="item" src="/static/images/items/{{ item[1] }}-{{ item[2] }}.png">
-                <p class="text" >{{ item[3] }}</p>
+                <a class="normal" href="{{ url_for('review', product_id=item[0]) }}">
+                    <img class="item" src="/static/images/items/{{ item[1] }}-{{ item[2] }}.png">
+                    <p class="text" >{{ item[3] }}</p>
+                </a>
                 <form method="post">
                     <div class="price-text">
                         {{ item[4] }}<img class="price" src="/static/images/items/388-0.png">

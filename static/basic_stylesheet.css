@@ -149,6 +149,16 @@ a:visited {
     text-decoration: none;
 }
 
+a.normal {
+    color: black;
+    text-decoration: none;
+}
+
+a.normal:visited {
+    color: black;
+    text-decoration: none;
+}
+
 .below-header {
     display: flex;
     flex-direction: column;
@@ -216,7 +226,7 @@ a:visited {
 
 .cart-fixer {
     height: 100%;
-    width; 100%;
+    width: 100%;
     display: grid;
     place-items: center;
 }

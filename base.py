@@ -45,19 +45,19 @@ def index():
             user_id = session.get("id", None)
             # Check if product already exists in in_cart
             cur.execute(
-                "SELECT * FROM in_cart WHERE product_id = %s AND users_id = %s",
+                "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s",
                 (product_id, user_id),
             )
             test = cur.fetchone()
             # Adds to in_cart or increases quantity
             if test:
                 cur.execute(
-                    "UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND users_id = %s",
+                    "UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND user_id = %s",
                     (product_id, user_id),
                 )
             else:
                 cur.execute(
-                    "INSERT INTO in_cart (users_id, product_id, quantity) VALUES (%s, %s, 1);",
+                    "INSERT INTO in_cart (user_id, product_id, quantity) VALUES (%s, %s, 1);",
                     (user_id, product_id),
                 )
             conn.commit()
@@ -88,24 +88,49 @@ def cart():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute(
-        "SELECT product_id, quantity FROM in_cart WHERE users_id = %s",
-        (user_id,),
-    )
-    products = cur.fetchall()
-    product_array = []
-    for product in products:
-        cur.execute(
-            "SELECT pname, ptype, pmeta, price FROM products WHERE product_id = %s",
-            (product[0],),
-        )
-        # We know this is not None since we get it from the database
-        temp = cur.fetchone()
-        # Inserts (ptype, pmeta, pname, price * quantity)
-        product_array.append((temp[1], temp[2], temp[0], product[1] * temp[3]))
+    # My brain hurts looking at this query, but it's so efficient!!!
+    cur.execute("""
+        SELECT 
+            p.ptype AS ptype, 
+            p.pmeta AS pmeta, 
+            p.pname AS pname, 
+            i.quantity * p.price AS total_price
+        FROM in_cart i
+        JOIN products p ON p.product_id = i.product_id
+        WHERE i.user_id = %s
+    """, (user_id, ))
+    # All my homies hate JOIN statements, this is an array containing: ptype, pmeta, pname, price * quantity.
+    product_array = cur.fetchall()
     cur.close()
     conn.close()
     return render_template("cart.html", username=username, product_array=product_array)
+
+
+@app.route("/reviews/<int:product_id>")
+def review(product_id):
+    username = session.get("name", None)
+    conn = get_conn()
+    cur = conn.cursor()
+
+    # Untested query, probably works though since there's no error when running.
+    # NOTE: We need to add things like ptype, ptmeta and such to see images.
+    cur.execute("""
+        SELECT 
+            p.pname AS product_name,
+            r.rating,
+            u.username AS reviewer_name
+        FROM reviews r
+        JOIN users u ON u.user_id = r.reviewer_id
+        JOIN products p ON p.product_id = r.product_id
+        WHERE r.product_id = %s
+    """, (product_id,))
+    # Array containing: product_name, rating, reviewer_name.
+    # NOTE: This will return an empty array if there are no reviews, which I (think) is what we want
+    review_array = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return render_template("review.html", review_array=review_array, username=username)
 
 
 # --- Queries ---
@@ -176,20 +201,8 @@ def get_items():
     return data
 
 
-# Fetches all products from database
-def get_products():
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute("SELECT product_id, ptype, pmeta, pname, price FROM products")
-        prod_records = cur.fetchall()
-        return prod_records
-    except Exception:
-        return "ERROR at PRODUCT"
-
-
 # Used to convert the api request to a query
-def convert():
+def generate_products():
     query = "INSERT INTO products (ptype, pmeta, pname, price) VALUES"
     data = get_items()
     for item in data:
@@ -210,8 +223,20 @@ def convert():
         file.write(query)
 
 
+# Fetches all products from database
+def get_products():
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT product_id, ptype, pmeta, pname, price FROM products")
+        prod_records = cur.fetchall()
+        return prod_records
+    except Exception:
+        return "ERROR at PRODUCT"
+
+
 # Main
 if __name__ == "__main__":
-    # convert()
-    initial_insert()
+    # generate_products()
+    # initial_insert()
     app.run(debug=True, host="0.0.0.0", port=4444)
