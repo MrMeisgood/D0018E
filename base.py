@@ -7,18 +7,19 @@ from flask import (
     redirect,
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.functions import user
 
 from connection_config import get_conn
 import psycopg2
 import requests
 import random
 
+# Constants
 LOWEST_PRICE = 1
 HIGHEST_PRICE = 50
 # Please note that the max for this one is 719
 DISPLAYED_ITEMS = 30
 
-# NOTE: This is a very good guide for postgresql on aws: https://medium.com/@rangika123.kanchana/how-to-configure-postgresql-17-on-amazon-linux-2023-da9426261620
 # NOTE: I always forget,  but run screen to start screen session and screen -r to check current sessions on your aws instance.
 app = Flask(__name__)
 app.secret_key = "sixsevensixsevensixseven"
@@ -89,7 +90,8 @@ def cart():
     conn = get_conn()
     cur = conn.cursor()
     # My brain hurts looking at this query, but it's so efficient!!!
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             p.ptype AS ptype, 
             p.pmeta AS pmeta, 
@@ -98,7 +100,9 @@ def cart():
         FROM in_cart i
         JOIN products p ON p.product_id = i.product_id
         WHERE i.user_id = %s
-    """, (user_id, ))
+    """,
+        (user_id,),
+    )
     # All my homies hate JOIN statements, this is an array containing: ptype, pmeta, pname, price * quantity.
     product_array = cur.fetchall()
     cur.close()
@@ -106,26 +110,43 @@ def cart():
     return render_template("cart.html", username=username, product_array=product_array)
 
 
-@app.route("/reviews/<int:product_id>")
+@app.route("/reviews/<int:product_id>", methods=["GET", "POST"])
 def review(product_id):
     username = session.get("name", None)
     conn = get_conn()
     cur = conn.cursor()
 
-    # Untested query, probably works though since there's no error when running.
+    if flask_request.method == "POST":
+        # Get user_id (note that we expect the user to be signed in)
+        user_id = session.get("id", None)
+        review = flask_request.form.get("review", None)
+        rating = flask_request.form.get("rating", None)
+        cur.execute(
+            """
+            INSERT into reviews
+            (review, rating, reviewer_id, product_id)
+            VALUES (%s, %s, %s, %s)
+        """,
+            (review, rating, user_id, product_id),
+        )
+        conn.commit()
+    # This works now
     # NOTE: We need to add things like ptype, ptmeta and such to see images.
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             p.pname AS product_name,
             r.rating,
+            r.review,
             u.username AS reviewer_name
         FROM reviews r
         JOIN users u ON u.user_id = r.reviewer_id
         JOIN products p ON p.product_id = r.product_id
         WHERE r.product_id = %s
-    """, (product_id,))
-    # Array containing: product_name, rating, reviewer_name.
-    # NOTE: This will return an empty array if there are no reviews, which I (think) is what we want
+    """,
+        (product_id,),
+    )
+    # Array containing: product_name, rating, review, reviewer_name.
     review_array = cur.fetchall()
 
     cur.close()
