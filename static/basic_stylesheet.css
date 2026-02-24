@@ -218,7 +218,7 @@ a.normal:visited {
     height: 16px;
 }
 
-.store-item .item {
+.item {
     /* We might want to make a script that upscales the images or do it some other way, 
     they're just too small */
     width: 64px;

@@ -222,6 +222,7 @@ def get_items():
     return data
 
 
+# NOTE: Outdated! Doesn't remove the unused items.
 # Used to convert the api request to a query
 def generate_products():
     query = "INSERT INTO products (ptype, pmeta, pname, price) VALUES"
