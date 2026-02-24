@@ -46,7 +46,7 @@ def index():
             user_id = session.get("id", None)
             # Check if product already exists in in_cart
             cur.execute(
-                "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s",
+                "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s AND is_active = 1",
                 (product_id, user_id),
             )
             test = cur.fetchone()
@@ -89,25 +89,35 @@ def cart():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
-    # My brain hurts looking at this query, but it's so efficient!!!
+    
+    if flask_request.method == "POST":
+        product_id = flask_request.form.get("remove", None)
+        print(product_id)
+        cur.execute("DELETE FROM in_cart WHERE product_id = %s AND user_id = %s", 
+            (product_id, user_id),
+        )
+        conn.commit()
+
     cur.execute(
         """
         SELECT 
             p.ptype AS ptype, 
             p.pmeta AS pmeta, 
             p.pname AS pname, 
-            i.quantity * p.price AS total_price
+            i.quantity * p.price AS total_price,
+            i.quantity AS quantity,
+            p.product_id AS product_id
         FROM in_cart i
         JOIN products p ON p.product_id = i.product_id
-        WHERE i.user_id = %s
+        WHERE i.user_id = %s AND i.is_active = 1
     """,
         (user_id,),
     )
-    # All my homies hate JOIN statements, this is an array containing: ptype, pmeta, pname, price * quantity.
+    # All my homies hate JOIN statements, this is an array containing: ptype, pmeta, pname, price * quantity, quantity, product_id.
     product_array = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template("cart.html", username=username, product_array=product_array)
+    return render_template("cart.html", username=username, product_array=product_array, user_id=user_id)
 
 
 @app.route("/reviews/<int:product_id>", methods=["GET", "POST"])
@@ -136,6 +146,8 @@ def review(product_id):
         """
         SELECT 
             p.pname AS product_name,
+            p.ptype AS ptype,
+            p.pmeta AS pmeta,
             r.rating,
             r.review,
             u.username AS reviewer_name
@@ -146,12 +158,34 @@ def review(product_id):
     """,
         (product_id,),
     )
-    # Array containing: product_name, rating, review, reviewer_name.
+    # Array containing: product_name, ptype, pmeta, rating, review, reviewer_name.
     review_array = cur.fetchall()
 
     cur.close()
     conn.close()
     return render_template("review.html", review_array=review_array, username=username)
+
+
+@app.route("/checkout/<int:user_id>")
+def checkout(user_id):
+    conn = get_conn()
+    cur = conn.cursor()
+    # insert (active && user_id to checkout)
+    # update (make all inactive)
+    cur.execute("""
+        INSERT INTO checkout (in_cart_id) 
+        SELECT in_cart_nr 
+        FROM in_cart
+        WHERE user_id = %s AND is_active = 1
+    """, (user_id, ))
+
+    cur.execute("""
+        UPDATE in_cart 
+        SET is_active = 0
+        WHERE user_id = %s AND is_active = 1
+    """, (user_id, ))
+    conn.commit()
+    return render_template("history.html")
 
 
 # --- Queries ---
