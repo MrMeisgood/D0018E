@@ -33,7 +33,8 @@
             {% for review in review_array %}
                 <div class="cart-row">
                     <div class="cart-cell">
-                        {{ review[0] }}
+                        <div class="item-text">{{ review[0] }}</div>
+                        <img class="item" src="/static/images/items/{{ review[4] }}-{{ review[5] }}.png">
                     </div>
                     <div class="cart-cell">
                         {{ review[1] }}<br>{{ review[2] }}

@@ -138,7 +138,9 @@ def review(product_id):
             p.pname AS product_name,
             r.rating,
             r.review,
-            u.username AS reviewer_name
+            u.username AS reviewer_name,
+            p.ptype AS ptype,
+            p.pmeta AS pmeta
         FROM reviews r
         JOIN users u ON u.user_id = r.reviewer_id
         JOIN products p ON p.product_id = r.product_id
@@ -146,7 +148,7 @@ def review(product_id):
     """,
         (product_id,),
     )
-    # Array containing: product_name, rating, review, reviewer_name.
+    # Array containing: product_name, ptype, pmeta, rating, review, reviewer_name.
     review_array = cur.fetchall()
 
     cur.close()

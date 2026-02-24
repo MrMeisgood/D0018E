@@ -234,7 +234,7 @@ a.normal:visited {
 .cart-table {
     display: table;
     border-spacing: 15px;
-    width: 800px;
+    width: 70vw;
     background-image:
         linear-gradient(var(--bg-middle), var(--bg-middle)),
         url("images/blocks/log.png");
