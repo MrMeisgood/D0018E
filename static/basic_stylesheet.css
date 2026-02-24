@@ -221,7 +221,7 @@ a.normal:visited {
 .store-item .item {
     /* We might want to make a script that upscales the images or do it some other way, 
     they're just too small */
-    width: 32px;
+    width: 64px;
 }
 
 .cart-fixer {
