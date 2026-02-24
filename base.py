@@ -89,11 +89,12 @@ def cart():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
-    
+
     if flask_request.method == "POST":
         product_id = flask_request.form.get("remove", None)
         print(product_id)
-        cur.execute("DELETE FROM in_cart WHERE product_id = %s AND user_id = %s", 
+        cur.execute(
+            "DELETE FROM in_cart WHERE product_id = %s AND user_id = %s",
             (product_id, user_id),
         )
         conn.commit()
@@ -117,7 +118,7 @@ def cart():
     product_array = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template("cart.html", username=username, product_array=product_array, user_id=user_id)
+    return render_template("cart.html", username=username, product_array=product_array)
 
 
 @app.route("/reviews/<int:product_id>", methods=["GET", "POST"])
@@ -166,26 +167,49 @@ def review(product_id):
     return render_template("review.html", review_array=review_array, username=username)
 
 
-@app.route("/history/<int:user_id>")
-def checkout(user_id):
+@app.route("/history")
+def history():
+    user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
-    # insert (active && user_id to checkout)
-    # update (make all inactive)
-    cur.execute("""
-        INSERT INTO checkout (in_cart_id) 
-        SELECT in_cart_nr 
-        FROM in_cart
-        WHERE user_id = %s AND is_active = 1
-    """, (user_id, ))
+    cur.execute(
+        """
+        SELECT 
+            p.ptype AS ptype,
+            p.pmeta AS pmeta,
+            p.pname AS pname,
+            i.quantity,
+            p.price * i.quantity AS total_price
+        FROM in_cart i
+        JOIN products p ON p.product_id = i.product_id
+        WHERE i.user_id = %s AND i.is_active = 0
+    """,
+        (user_id,),
+    )
+    # Array containing: ptype, pmeta, pname, quantity, total_price
+    history_array = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template("history.html", history_array=history_array)
 
-    cur.execute("""
-        UPDATE in_cart 
-        SET is_active = 0
-        WHERE user_id = %s AND is_active = 1
-    """, (user_id, ))
-    conn.commit()
-    return render_template("history.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if flask_request.method == "POST":
+        uname = flask_request.form["username"]
+        passw = flask_request.form["password"]
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username = %s", (uname,))
+        user_record = cur.fetchone()
+        if user_record:
+            id, name, password, isadmin = user_record
+            if str(password) == passw:
+                session["id"] = id
+                session["name"] = name
+                return redirect(url_for("index"))
+            return redirect(url_for("login")), "Invalid Username or Password"
+    return render_template("login.html")
 
 
 # --- Queries ---
@@ -211,23 +235,34 @@ def add_user():
         return redirect(url_for("register"))
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if flask_request.method == "POST":
-        uname = flask_request.form["username"]
-        passw = flask_request.form["password"]
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE username = %s", (uname,))
-        user_record = cur.fetchone()
-        if user_record:
-            id, name, password, isadmin = user_record
-            if str(password) == passw:
-                session["id"] = id
-                session["name"] = name
-                return redirect(url_for("index"))
-            return redirect(url_for("login")), "Invalid Username or Password"
-    return render_template("login.html")
+# Moves the users active items to inactive
+@app.route("/checkout")
+def checkout():
+    user_id = session.get("id", None)
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO checkout (in_cart_id) 
+        SELECT in_cart_nr 
+        FROM in_cart
+        WHERE user_id = %s AND is_active = 1
+    """,
+        (user_id,),
+    )
+
+    cur.execute(
+        """
+        UPDATE in_cart 
+        SET is_active = 0
+        WHERE user_id = %s AND is_active = 1
+    """,
+        (user_id,),
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect(url_for("history"))
 
 
 # --- Helpers ---
