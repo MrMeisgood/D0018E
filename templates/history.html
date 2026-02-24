@@ -29,31 +29,6 @@
                 </div>
                 <div class="cart-cell"></div>
             </div>
-            {% for product in product_array %}
-                <div class="cart-row">
-                    <div class="cart-cell">
-                        <img class="item" src="/static/images/items/{{ product[0] }}-{{ product[1] }}.png">
-                    </div>
-                    <div class="cart-cell">
-                       {{ product[2] }}
-                    </div>
-                    <div class="cart-cell">
-                       {{ product[4] }}
-                    </div>
-                    <div class="cart-cell">
-                        <p class="price-text">{{ product[3] }}<img class="price" src="/static/images/items/388-0.png"></p>
-                    </div>
-                    <div class="cart-cell">
-                        <form method="post">
-                            <button type="submit" class="orange" name="remove" value="{{ product[5] }}">Remove</button>
-                        </form>
-                    </div>
-                </div>
-            {% endfor %}
         </div>
-        <br>
-        <a class="normal" href="{{ url_for('checkout', user_id=user_id) }}">
-            <button class="orange">Checkout</button>
-        </a>
     </div>
 {% endblock %}

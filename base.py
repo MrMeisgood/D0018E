@@ -166,7 +166,7 @@ def review(product_id):
     return render_template("review.html", review_array=review_array, username=username)
 
 
-@app.route("/checkout/<int:user_id>")
+@app.route("/history/<int:user_id>")
 def checkout(user_id):
     conn = get_conn()
     cur = conn.cursor()
