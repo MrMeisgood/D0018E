@@ -1,18 +1,20 @@
-from flask import (
-    Flask,
-    render_template,
-    request as flask_request,
-    session,
-    url_for,
-    redirect,
-)
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql.functions import user
+import random
 
-from connection_config import get_conn
 import psycopg2
 import requests
-import random
+from flask import (
+    Flask,
+    redirect,
+    render_template,
+    session,
+    url_for,
+)
+from flask import (
+    request as flask_request,
+)
+from flask_sqlalchemy import SQLAlchemy
+
+from connection_config import get_conn
 
 # Constants
 LOWEST_PRICE = 1
@@ -101,10 +103,10 @@ def cart():
 
     cur.execute(
         """
-        SELECT 
-            p.ptype AS ptype, 
-            p.pmeta AS pmeta, 
-            p.pname AS pname, 
+        SELECT
+            p.ptype AS ptype,
+            p.pmeta AS pmeta,
+            p.pname AS pname,
             i.quantity * p.price AS total_price,
             i.quantity AS quantity,
             p.product_id AS product_id
@@ -145,7 +147,7 @@ def review(product_id):
     # NOTE: We need to add things like ptype, ptmeta and such to see images.
     cur.execute(
         """
-        SELECT 
+        SELECT
             p.pname AS product_name,
             p.ptype AS ptype,
             p.pmeta AS pmeta,
@@ -174,7 +176,7 @@ def history():
     cur = conn.cursor()
     cur.execute(
         """
-        SELECT 
+        SELECT
             p.ptype AS ptype,
             p.pmeta AS pmeta,
             p.pname AS pname,
@@ -208,7 +210,7 @@ def login():
                 session["id"] = id
                 session["name"] = name
                 return redirect(url_for("index"))
-            return redirect(url_for("login")), "Invalid Username or Password"
+            return redirect(url_for("login"))
     return render_template("login.html")
 
 
@@ -243,8 +245,8 @@ def checkout():
     cur = conn.cursor()
     cur.execute(
         """
-        INSERT INTO checkout (in_cart_id) 
-        SELECT in_cart_nr 
+        INSERT INTO checkout (in_cart_id)
+        SELECT in_cart_nr
         FROM in_cart
         WHERE user_id = %s AND is_active = 1
     """,
@@ -253,7 +255,7 @@ def checkout():
 
     cur.execute(
         """
-        UPDATE in_cart 
+        UPDATE in_cart
         SET is_active = 0
         WHERE user_id = %s AND is_active = 1
     """,
