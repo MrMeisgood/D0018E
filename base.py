@@ -148,7 +148,7 @@ def review(product_id):
     cur.execute(
         """
         SELECT
-            p.pname AS product_name,
+            p.pname AS product_name, 
             p.ptype AS ptype,
             p.pmeta AS pmeta,
             r.rating,
