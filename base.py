@@ -1,18 +1,20 @@
-from flask import (
-    Flask,
-    render_template,
-    request as flask_request,
-    session,
-    url_for,
-    redirect,
-)
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql.functions import user
+import random
 
-from connection_config import get_conn
 import psycopg2
 import requests
-import random
+from flask import (
+    Flask,
+    redirect,
+    render_template,
+    session,
+    url_for,
+)
+from flask import (
+    request as flask_request,
+)
+from flask_sqlalchemy import SQLAlchemy
+
+from connection_config import get_conn
 
 # Constants
 LOWEST_PRICE = 1
@@ -46,7 +48,7 @@ def index():
             user_id = session.get("id", None)
             # Check if product already exists in in_cart
             cur.execute(
-                "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s",
+                "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s AND is_active = 1",
                 (product_id, user_id),
             )
             test = cur.fetchone()
@@ -89,21 +91,32 @@ def cart():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
-    # My brain hurts looking at this query, but it's so efficient!!!
+
+    if flask_request.method == "POST":
+        product_id = flask_request.form.get("remove", None)
+        print(product_id)
+        cur.execute(
+            "DELETE FROM in_cart WHERE product_id = %s AND user_id = %s",
+            (product_id, user_id),
+        )
+        conn.commit()
+
     cur.execute(
         """
-        SELECT 
-            p.ptype AS ptype, 
-            p.pmeta AS pmeta, 
-            p.pname AS pname, 
-            i.quantity * p.price AS total_price
+        SELECT
+            p.ptype AS ptype,
+            p.pmeta AS pmeta,
+            p.pname AS pname,
+            i.quantity * p.price AS total_price,
+            i.quantity AS quantity,
+            p.product_id AS product_id
         FROM in_cart i
         JOIN products p ON p.product_id = i.product_id
-        WHERE i.user_id = %s
+        WHERE i.user_id = %s AND i.is_active = 1
     """,
         (user_id,),
     )
-    # All my homies hate JOIN statements, this is an array containing: ptype, pmeta, pname, price * quantity.
+    # All my homies hate JOIN statements, this is an array containing: ptype, pmeta, pname, price * quantity, quantity, product_id.
     product_array = cur.fetchall()
     cur.close()
     conn.close()
@@ -134,8 +147,10 @@ def review(product_id):
     # NOTE: We need to add things like ptype, ptmeta and such to see images.
     cur.execute(
         """
-        SELECT 
+        SELECT
             p.pname AS product_name,
+            p.ptype AS ptype,
+            p.pmeta AS pmeta,
             r.rating,
             r.review,
             u.username AS reviewer_name,
@@ -154,6 +169,51 @@ def review(product_id):
     cur.close()
     conn.close()
     return render_template("review.html", review_array=review_array, username=username)
+
+
+@app.route("/history")
+def history():
+    user_id = session.get("id", None)
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT
+            p.ptype AS ptype,
+            p.pmeta AS pmeta,
+            p.pname AS pname,
+            i.quantity,
+            p.price * i.quantity AS total_price
+        FROM in_cart i
+        JOIN products p ON p.product_id = i.product_id
+        WHERE i.user_id = %s AND i.is_active = 0
+    """,
+        (user_id,),
+    )
+    # Array containing: ptype, pmeta, pname, quantity, total_price
+    history_array = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template("history.html", history_array=history_array)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if flask_request.method == "POST":
+        uname = flask_request.form["username"]
+        passw = flask_request.form["password"]
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username = %s", (uname,))
+        user_record = cur.fetchone()
+        if user_record:
+            id, name, password, isadmin = user_record
+            if str(password) == passw:
+                session["id"] = id
+                session["name"] = name
+                return redirect(url_for("index"))
+            return redirect(url_for("login"))
+    return render_template("login.html")
 
 
 # --- Queries ---
@@ -179,23 +239,34 @@ def add_user():
         return redirect(url_for("register"))
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if flask_request.method == "POST":
-        uname = flask_request.form["username"]
-        passw = flask_request.form["password"]
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE username = %s", (uname,))
-        user_record = cur.fetchone()
-        if user_record:
-            id, name, password, isadmin = user_record
-            if str(password) == passw:
-                session["id"] = id
-                session["name"] = name
-                return redirect(url_for("index"))
-            return redirect(url_for("login")), "Invalid Username or Password"
-    return render_template("login.html")
+# Moves the users active items to inactive
+@app.route("/checkout")
+def checkout():
+    user_id = session.get("id", None)
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO checkout (in_cart_id)
+        SELECT in_cart_nr
+        FROM in_cart
+        WHERE user_id = %s AND is_active = 1
+    """,
+        (user_id,),
+    )
+
+    cur.execute(
+        """
+        UPDATE in_cart
+        SET is_active = 0
+        WHERE user_id = %s AND is_active = 1
+    """,
+        (user_id,),
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect(url_for("history"))
 
 
 # --- Helpers ---
