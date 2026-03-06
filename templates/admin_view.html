@@ -1,0 +1,46 @@
+{% extends "template.html" %}
+
+{% block head %}
+    <title>Reviews | Villager Store</title>
+{% endblock %}
+
+{% block header %}
+<div class="welcome">
+    <p>{{ username }}</p>
+</div>
+<nav>
+    <li><span><a class="blue" href="{{ url_for('admin_review') }}">Reviews</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('index') }}">Back</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('history') }}">Receipt</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('logout') }}">Log out</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
+</nav>
+{% endblock %}
+
+{% block body %}
+    <br><br>
+    <div class="cart-fixer">
+        <div class="cart-table">
+            <div class="cart-row">
+                <form method="post">
+                    <div class="price-text">
+                        <div class="cart-cell">
+                            <input type="text" name="name" placeholder="Product Name">
+                        </div>
+                        <div class="cart-cell">
+                            <input type="number" name="price" placeholder="Price" min="0" max="50"> <br />
+                        </div>
+                        <div class="cart-cell">
+                            <input type="number" name="type" placeholder="Item img" min="1" max="453"> <br />
+                        </div>
+                        <button type="submit" class="orange" name="item_id">Add Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

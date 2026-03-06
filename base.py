@@ -26,7 +26,6 @@ DISPLAYED_ITEMS = 30
 app = Flask(__name__)
 app.secret_key = "sixsevensixsevensixseven"
 
-
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost/store"
 
 db = SQLAlchemy(app)
@@ -39,39 +38,56 @@ def index():
     if not username:
         return redirect(url_for("login"))
     if flask_request.method == "POST":
-        try:
-            product_id = flask_request.form.get("item_id", None)
+        if flask_request.form.get("remove"):
+            product_id = flask_request.form.get("remove", None)
+            print(product_id)
             # Connect to database
             conn = get_conn()
             cur = conn.cursor()
-            # Get user_id (note that we expect the user to be signed in)
-            user_id = session.get("id", None)
-            # Check if product already exists in in_cart
             cur.execute(
-                "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s AND is_active = 1",
-                (product_id, user_id),
+                "DELETE FROM products WHERE product_id = %s",
+                (product_id,),
             )
-            test = cur.fetchone()
-            # Adds to in_cart or increases quantity
-            if test:
-                cur.execute(
-                    "UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND user_id = %s",
-                    (product_id, user_id),
-                )
-            else:
-                cur.execute(
-                    "INSERT INTO in_cart (user_id, product_id, quantity) VALUES (%s, %s, 1);",
-                    (user_id, product_id),
-                )
             conn.commit()
             cur.close()
             conn.close()
-        except Exception:
-            return "The database be strugglin'"
-    # Doesn't get items till we actually know they're needed
-    items = get_products()[:DISPLAYED_ITEMS]
+            return redirect(url_for("index"))
+        else:
+            try:
+                product_id = flask_request.form.get("item_id", None)
+                # Connect to database
+                conn = get_conn()
+                cur = conn.cursor()
+                # Get user_id (note that we expect the user to be signed in)
+                user_id = session.get("id", None)
+                # Check if product already exists in in_cart
+                cur.execute(
+                    "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s AND is_active = 1",
+                    (product_id, user_id),
+                )
+                test = cur.fetchone()
+                # Adds to in_cart or increases quantity
+                if test:
+                    cur.execute(
+                        "UPDATE in_cart SET quantity = quantity + 1 WHERE product_id = %s AND user_id = %s",
+                        (product_id, user_id),
+                    )
+                else:
+                    cur.execute(
+                        "INSERT INTO in_cart (user_id, product_id, quantity) VALUES (%s, %s, 1);",
+                        (user_id, product_id),
+                    )
+                conn.commit()
+                cur.close()
+                conn.close()
+            except Exception:
+                return "The database be strugglin'"
+    # Doesn't get items till we actually know they're needed [:DISPLAYED_ITEMS]
+    is_admin = session.get("is_admin", None)
+    items = get_products()
+    if is_admin:
+        return render_template ("admin_index.html", name=username, items=items)
     return render_template("index.html", name=username, items=items)
-
 
 @app.route("/logout")
 def logout():
@@ -122,6 +138,45 @@ def cart():
     conn.close()
     return render_template("cart.html", username=username, product_array=product_array)
 
+# for admin page to add products
+@app.route("/admin_view", methods=["POST","GET"])
+def admin_view():
+    username = session.get("name", None)
+    conn = get_conn()
+    cur = conn.cursor()
+    if flask_request.method == "POST":
+        pname = flask_request.form.get("name", None)
+        price = flask_request.form.get("price", None)
+        img_type = flask_request.form.get("type", None)
+        cur.execute(
+            """
+            INSERT into products
+            (pname, price, ptype, pmeta)
+            VALUES (%s, %s, %s, 0)
+        """,
+            (pname, price, img_type)
+        )
+        conn.commit()
+        return redirect(url_for("index"))
+    return render_template("admin_view.html", username=username)
+
+@app.route("/admin_review", methods=["POST","GET"])
+def admin_review():
+    conn = get_conn()
+    cur = conn.cursor()
+    if flask_request.method == "POST":
+        review_id = flask_request.form.get("remove", None)
+        cur.execute(
+            "DELETE FROM reviews WHERE review_id = %s",
+                (review_id,),
+        )
+        conn.commit()
+    cur.execute(
+        """
+        SELECT * from reviews
+    """)
+    review_array = cur.fetchall()
+    return render_template("admin_review.html", review_array=review_array)
 
 @app.route("/reviews/<int:product_id>", methods=["GET", "POST"])
 def review(product_id):
@@ -133,7 +188,7 @@ def review(product_id):
         # Get user_id (note that we expect the user to be signed in)
         user_id = session.get("id", None)
         review = flask_request.form.get("review", None)
-        rating = flask_request.form.get("rating", None)
+        rating = int(flask_request.form.get("rating", None))
         cur.execute(
             """
             INSERT into reviews
@@ -173,6 +228,7 @@ def review(product_id):
 
 @app.route("/history")
 def history():
+    username = session.get("name", None)
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
@@ -194,7 +250,7 @@ def history():
     history_array = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template("history.html", history_array=history_array)
+    return render_template("history.html", history_array=history_array, username=username)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -207,10 +263,11 @@ def login():
         cur.execute("SELECT * FROM users WHERE username = %s", (uname,))
         user_record = cur.fetchone()
         if user_record:
-            id, name, password, isadmin = user_record
+            id, name, password, is_admin = user_record
             if str(password) == passw:
                 session["id"] = id
                 session["name"] = name
+                session["is_admin"] = is_admin
                 return redirect(url_for("index"))
             return redirect(url_for("login"))
     return render_template("login.html")

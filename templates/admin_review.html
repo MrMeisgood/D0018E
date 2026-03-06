@@ -1,14 +1,20 @@
 {% extends "template.html" %}
 
 {% block head %}
-    <title>Reviews | Villager Store</title>
+<title>Villager Store</title>
 {% endblock %}
 
 {% block header %}
 <div class="welcome">
-    <p>{{ username }}</p>
+    <p> Review remover 3000 </p>
 </div>
 <nav>
+    <li><span><a class="blue" href="{{ url_for('index') }}">Back</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('admin_view') }}">Add product</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('history') }}">Receipt</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
     <li><span><a class="blue" href="{{ url_for('logout') }}">Log out</a></span></li>
     <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
     <li><span><a class="blue" href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
@@ -33,27 +39,21 @@
             {% for review in review_array %}
                 <div class="cart-row">
                     <div class="cart-cell">
-                        <div class="item-text">{{ review[0] }}</div>
-                        <img class="item" src="/static/images/items/{{ review[1] }}-{{ review[2] }}.png">
+                        <div class="item-text">{{ review[3] }}</div>
                     </div>
                     <div class="cart-cell">
-                        {{ review[3] }}<br>{{ review[4] }}
+                        {{ review[0] }}<br>{{ review[4] }}
                     </div>
                     <div class="cart-cell">
-                        {{ review[5] }}
+                        {{ review[1] }}
+                    </div>
+                    <div class="cart-cell">
+                        <form method="post">
+                            <button type="submit" class="orange" name="remove" value="{{ review[2] }}">Remove</button>
+                        </form>
                     </div>
                 </div>
-            {% endfor %}
-            <div class="cart-row">
-                <div class="cart-cell">
-                    <form method="post">
-                        <div class="price-text">
-                            <input type="text" name="rating" placeholder="write your rating (1-10)">
-                            <input type="text" name="review" placeholder="Write your review">
-                            <button type="submit" class="orange">Submit Review</button>
-                        </div>
-                    </form>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

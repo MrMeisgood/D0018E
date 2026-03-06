@@ -60,6 +60,7 @@ input {
     color: black;
     font-family: var(--font);
 }
+
 table {
     margin: auto;
     border-collapse: collapse;

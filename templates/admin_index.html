@@ -1,0 +1,44 @@
+{% extends "template.html" %}
+
+{% block head %}
+<title>Villager Store</title>
+{% endblock %}
+
+{% block header %}
+<div class="welcome">
+    <p> Welcome admin {{ name }}!</p>
+</div>
+<nav>
+    <li><span><a class="blue" href="{{ url_for('admin_review') }}">Reviews</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('admin_view') }}">Add product</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('history') }}">Receipt</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('logout') }}">Log out</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
+    <li><span><a class="blue" href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
+</nav>
+{% endblock %}
+
+{% block body %}
+    <br><br>
+    <div class="store-grid">
+        {% for item in items %}
+            <div class="store-item">
+                <a class="normal" href="{{ url_for('review', product_id=item[0]) }}">
+                    <img class="item" src="/static/images/items/{{ item[1] }}-{{ item[2] }}.png">
+                    <p class="text" >{{ item[3] }}</p>
+                </a>
+                <form method="post">
+                    <div class="price-text">
+                        {{ item[4] }}<img class="price" src="/static/images/items/388-0.png">
+                        <button type="submit" class="orange" name="item_id" value="{{ item[0] }}">Buy</button>
+                        <button type="submit" class="orange" name="remove" value="{{ item[0] }}">Remove</button>
+                    </div>
+                </form>
+                <!-- These buttons don't fit at all, but they're fine for now -->
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
