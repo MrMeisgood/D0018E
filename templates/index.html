@@ -9,6 +9,8 @@
     <p> Welcome {{ name }}!</p>
 </div>
 <nav>
+    <li><span><a class="blue" href="{{ url_for('history') }}">Receipt</a></span></li>
+    <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
     <li><span><a class="blue" href="{{ url_for('logout') }}">Log out</a></span></li>
     <li><span style="font-family: Arial; font-weight: bolder;">|</span></li>
     <li><span><a class="blue" href="{{ url_for('cart') }}"><b>Cart</b></a></span></li>
