@@ -62,7 +62,7 @@ def index():
                 user_id = session.get("id", None)
                 # Check if product already exists in in_cart
                 cur.execute(
-                    "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s AND is_active = 1",
+                    "SELECT * FROM in_cart WHERE product_id = %s AND user_id = %s",
                     (product_id, user_id),
                 )
                 test = cur.fetchone()
@@ -86,8 +86,9 @@ def index():
     is_admin = session.get("is_admin", None)
     items = get_products()
     if is_admin:
-        return render_template ("admin_index.html", name=username, items=items)
+        return render_template("admin_index.html", name=username, items=items)
     return render_template("index.html", name=username, items=items)
+
 
 @app.route("/logout")
 def logout():
@@ -128,7 +129,7 @@ def cart():
             p.product_id AS product_id
         FROM in_cart i
         JOIN products p ON p.product_id = i.product_id
-        WHERE i.user_id = %s AND i.is_active = 1
+        WHERE i.user_id = %s
     """,
         (user_id,),
     )
@@ -138,8 +139,9 @@ def cart():
     conn.close()
     return render_template("cart.html", username=username, product_array=product_array)
 
+
 # for admin page to add products
-@app.route("/admin_view", methods=["POST","GET"])
+@app.route("/admin_view", methods=["POST", "GET"])
 def admin_view():
     username = session.get("name", None)
     conn = get_conn()
@@ -154,13 +156,14 @@ def admin_view():
             (pname, price, ptype, pmeta)
             VALUES (%s, %s, %s, 0)
         """,
-            (pname, price, img_type)
+            (pname, price, img_type),
         )
         conn.commit()
         return redirect(url_for("index"))
     return render_template("admin_view.html", username=username)
 
-@app.route("/admin_review", methods=["POST","GET"])
+
+@app.route("/admin_review", methods=["POST", "GET"])
 def admin_review():
     conn = get_conn()
     cur = conn.cursor()
@@ -168,15 +171,17 @@ def admin_review():
         review_id = flask_request.form.get("remove", None)
         cur.execute(
             "DELETE FROM reviews WHERE review_id = %s",
-                (review_id,),
+            (review_id,),
         )
         conn.commit()
     cur.execute(
         """
         SELECT * from reviews
-    """)
+    """
+    )
     review_array = cur.fetchall()
     return render_template("admin_review.html", review_array=review_array)
+
 
 @app.route("/reviews/<int:product_id>", methods=["GET", "POST"])
 def review(product_id):
@@ -232,6 +237,8 @@ def history():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
+    # NOTE: This query needs to be rewritten, I'm tired, so we'll do it together later
+    # (unless you've solved it when I wake up)
     cur.execute(
         """
         SELECT
@@ -250,7 +257,9 @@ def history():
     history_array = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template("history.html", history_array=history_array, username=username)
+    return render_template(
+        "history.html", history_array=history_array, username=username
+    )
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -302,24 +311,42 @@ def checkout():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
+    # Magical query, it creates a new checkout and also copies the values from the active
+    # users in_cart to checkout_items.
     cur.execute(
         """
-        INSERT INTO checkout (in_cart_id)
-        SELECT in_cart_nr
-        FROM in_cart
-        WHERE user_id = %s AND is_active = 1
+        WITH new_checkout AS (
+            INSERT INTO checkout (user_id) VALUES (%s) RETURNING checkout_id
+        )
+        INSERT INTO checkout_items (checkout_id, product_id, quantity)
+        SELECT n.checkout_id, i.product_id, i.quantity
+        FROM in_cart i
+        JOIN products p ON p.product_id = i.product_id
+        CROSS JOIN new_checkout n
+        WHERE i.user_id = %s
+    """,
+        (user_id, user_id),
+    )
+    # Clear the users cart.
+    cur.execute("DELETE FROM in_cart WHERE user_id = %s", (user_id,))
+    # Calculate the total price and add it to checkout.
+    # NOTE: This could probably be done in the first query, but we'll figure that out later
+    # to avoid flabbergasting me completely!
+    cur.execute(
+        # NOTE: The total price is the sum of all ci.quantity * p.price.
+        """
+        UPDATE checkout c 
+        SET total_price = (
+            SELECT SUM(ci.quantity * p.price)
+            FROM checkout_items ci
+            JOIN products p ON p.product_id = ci.product_id
+            WHERE ci.checkout_id = c.checkout_id
+        )
+        WHERE user_id = %s
     """,
         (user_id,),
     )
 
-    cur.execute(
-        """
-        UPDATE in_cart
-        SET is_active = 0
-        WHERE user_id = %s AND is_active = 1
-    """,
-        (user_id,),
-    )
     conn.commit()
     cur.close()
     conn.close()
@@ -329,6 +356,7 @@ def checkout():
 # --- Helpers ---
 # Funciton used for filling the products table.
 def initial_insert():
+    # Uses products.txt as a starting point
     with open("static/products.txt", "r") as file:
         query = file.read()
 
@@ -380,7 +408,9 @@ def get_products():
     try:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("SELECT product_id, ptype, pmeta, pname, price FROM products")
+        cur.execute(
+            "SELECT product_id, ptype, pmeta, pname, price FROM products WHERE is_active = 1"
+        )
         prod_records = cur.fetchall()
         return prod_records
     except Exception:
@@ -389,6 +419,5 @@ def get_products():
 
 # Main
 if __name__ == "__main__":
-    # generate_products()
     # initial_insert()
     app.run(debug=True, host="0.0.0.0", port=4444)
