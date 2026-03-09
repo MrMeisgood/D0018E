@@ -11,8 +11,7 @@
 {% endblock %}
 
     <!-- Array containing: ptype, pmeta, pname, quantity, total_price -->
-{% block body %}
-    <br><br>
+{% block body %}<br><br>
     <div class="cart-fixer">
         <div class="cart-table">
             <div class="cart-row">
@@ -26,7 +25,7 @@
                     <b>Amount</b>
                 </div>
                 <div class="cart-cell">
-                  <b>Total price</b>
+                  <b>Price</b>
                 </div>
             </div>
             {% for checkout in history_array %}
@@ -46,8 +45,13 @@
                         </div>
                     </div>
                 {% endfor %}
-                TOTAL PRICE:::::<p class="price-text">{{ total_price[loop.index0][0] }}<img class="price" src="/static/images/items/388-0.png"></p>
-                <br><br><br>
+                <div class="cart-row">
+                    <div class="cart-cell"></div><div class="cart-cell"></div><div class="cart-cell"></div>
+                    <div class="cart-cell">
+                        <b>Total price: </b><p class="price-text">{{ total_price[loop.index0][0] }}<img class="price" src="/static/images/items/388-0.png"></p>
+                    </div>
+                </div>
+                <br>
             {% endfor %}
         </div>
     </div>
