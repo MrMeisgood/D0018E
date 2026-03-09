@@ -45,8 +45,8 @@ def index():
             conn = get_conn()
             cur = conn.cursor()
             cur.execute(
-                "DELETE FROM products WHERE product_id = %s",
-                (product_id,),
+                "UPDATE products SET is_active = 0 WHERE product_id = %s",
+                (product_id, ),
             )
             conn.commit()
             cur.close()
@@ -175,8 +175,19 @@ def admin_review():
         )
         conn.commit()
     cur.execute(
-        """
-        SELECT * from reviews
+    """
+        SELECT
+            p.pname, 
+            p.ptype,
+            p.pmeta,
+            r.rating,
+            r.review,
+            u.username,
+            p.product_id,
+            r.review_id
+        FROM reviews r
+        JOIN users u ON u.user_id = r.reviewer_id
+        JOIN products p ON p.product_id = r.product_id
     """
     )
     review_array = cur.fetchall()

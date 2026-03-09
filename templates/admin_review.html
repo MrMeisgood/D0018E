@@ -39,17 +39,20 @@
             {% for review in review_array %}
                 <div class="cart-row">
                     <div class="cart-cell">
-                        <div class="item-text">{{ review[3] }}</div>
+                        <a class="normal" href="{{ url_for('review', product_id=review[6]) }}">
+                            <div class="item-text">{{ review[0] }}</div>
+                            <img class="item" src="/static/images/items/{{ review[1] }}-{{ review[2] }}.png">
+                        </a>
                     </div>
                     <div class="cart-cell">
-                        {{ review[0] }}<br>{{ review[4] }}
+                        {{ review[3] }}/10<br>{{ review[4] }}
                     </div>
                     <div class="cart-cell">
-                        {{ review[1] }}
+                        {{ review[5] }}
                     </div>
                     <div class="cart-cell">
                         <form method="post">
-                            <button type="submit" class="orange" name="remove" value="{{ review[2] }}">Remove</button>
+                            <button type="submit" class="orange" name="remove" value="{{ review[7] }}">Remove</button>
                         </form>
                     </div>
                 </div>

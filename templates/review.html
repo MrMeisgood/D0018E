@@ -37,7 +37,7 @@
                         <img class="item" src="/static/images/items/{{ review[1] }}-{{ review[2] }}.png">
                     </div>
                     <div class="cart-cell">
-                        {{ review[3] }}<br>{{ review[4] }}
+                        {{ review[3] }}/10<br>{{ review[4] }}
                     </div>
                     <div class="cart-cell">
                         {{ review[5] }}
@@ -48,7 +48,7 @@
                 <div class="cart-cell">
                     <form method="post">
                         <div class="price-text">
-                            <input type="text" name="rating" placeholder="write your rating (1-10)">
+                            <input type="number" name="rating" min="0" max="10" placeholder="write your rating (1-10)">
                             <input type="text" name="review" placeholder="Write your review">
                             <button type="submit" class="orange">Submit Review</button>
                         </div>
