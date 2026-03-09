@@ -26,24 +26,28 @@
                     <b>Amount</b>
                 </div>
                 <div class="cart-cell">
-                    <b>Total price</b>
+                  <b>Total price</b>
                 </div>
             </div>
-            {% for product in history_array %}
-                <div class="cart-row">
-                    <div class="cart-cell">
-                        <img class="item" src="/static/images/items/{{ product[0] }}-{{ product[1] }}.png">
+            {% for checkout in history_array %}
+                {% for product in checkout %}
+                    <div class="cart-row">
+                        <div class="cart-cell">
+                            <img class="item" src="/static/images/items/{{ product[0] }}-{{ product[1] }}.png">
+                        </div>
+                        <div class="cart-cell">
+                          {{ product[2] }}
+                        </div>
+                        <div class="cart-cell">
+                          {{ product[3] }}
+                        </div>
+                        <div class="cart-cell">
+                            <p class="price-text">{{ product[4] }}<img class="price" src="/static/images/items/388-0.png"></p>
+                        </div>
                     </div>
-                    <div class="cart-cell">
-                       {{ product[2] }}
-                    </div>
-                    <div class="cart-cell">
-                       {{ product[3] }}
-                    </div>
-                    <div class="cart-cell">
-                        <p class="price-text">{{ product[4] }}<img class="price" src="/static/images/items/388-0.png"></p>
-                    </div>
-                </div>
+                {% endfor %}
+                TOTAL PRICE:::::<p class="price-text">{{ total_price[loop.index0][0] }}<img class="price" src="/static/images/items/388-0.png"></p>
+                <br><br><br>
             {% endfor %}
         </div>
     </div>

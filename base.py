@@ -239,26 +239,54 @@ def history():
     cur = conn.cursor()
     # NOTE: This query needs to be rewritten, I'm tired, so we'll do it together later
     # (unless you've solved it when I wake up)
-    cur.execute(
-        """
-        SELECT
-            p.ptype AS ptype,
-            p.pmeta AS pmeta,
-            p.pname AS pname,
-            i.quantity,
-            p.price * i.quantity AS total_price
-        FROM in_cart i
-        JOIN products p ON p.product_id = i.product_id
-        WHERE i.user_id = %s AND i.is_active = 0
-    """,
-        (user_id,),
-    )
-    # Array containing: ptype, pmeta, pname, quantity, total_price
-    history_array = cur.fetchall()
+    # cur.execute(
+    #     """
+    #     SELECT
+    #         p.ptype,
+    #         p.pmeta,
+    #         p.pname,
+    #         ci.quantity,
+    #         p.price * ci.quantity
+    #     FROM checkout c
+    #     JOIN checkout_items ci ON ci.checkout_id = c.checkout_id
+    #     JOIN products p ON p.product_id = ci.product_id
+    #     WHERE c.user_id = %s
+    # """,
+    #     (user_id,),
+    # )
+
+    cur.execute("SELECT checkout_id FROM checkout WHERE user_id = %s", (user_id,))
+    checkout_ids = cur.fetchall()
+    history_array = []
+    for id in checkout_ids:
+        cur.execute(
+            """
+                SELECT 
+                    p.ptype,
+                    p.pmeta,
+                    p.pname,
+                    ci.quantity,
+                    p.price * ci.quantity
+                FROM checkout_items ci
+                JOIN products p ON p.product_id = ci.product_id
+                WHERE ci.checkout_id = %s
+        """,
+            (id,),
+        )
+        history_array.append(cur.fetchall())
+
+    # Fetch total price
+    cur.execute("SELECT total_price from checkout WHERE user_id = %s", (user_id,))
+    total_price = cur.fetchall()
+    # Array containing: ptype, pmeta, pname, quantity, item price,
     cur.close()
     conn.close()
+    print(total_price)
     return render_template(
-        "history.html", history_array=history_array, username=username
+        "history.html",
+        history_array=history_array,
+        username=username,
+        total_price=total_price,
     )
 
 
