@@ -267,3 +267,13 @@ a.normal:visited {
     display: table-cell;
     padding: 10px;
 }
+
+input[type=number] {
+  background: rgb(255, 255, 255);
+  width: 190px;
+}
+
+input[type=text] {
+  background: rgb(255, 255, 255);
+  width: 15vw;
+}
