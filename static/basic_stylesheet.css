@@ -1,262 +1,267 @@
 @font-face {
-    font-family: "Minecraft Font";
-    src: url("/static/minecraft-font/MinecraftRegular-Bmg3.otf") format("truetype"),
-        url("/static/minecraft-font/MinecraftBold-nMK1.otf") format("truetype"),
-        url("/static/minecraft-font/MinecraftItalic-R8Mo.otf") format("truetype"),
-        url("/static/minecraft-font/MinecraftBoldItalic-1y1e.otf") format("truetype");
+  font-family: "Minecraft Font";
+  src:
+    url("/static/minecraft-font/MinecraftRegular-Bmg3.otf") format("truetype"),
+    url("/static/minecraft-font/MinecraftBold-nMK1.otf") format("truetype"),
+    url("/static/minecraft-font/MinecraftItalic-R8Mo.otf") format("truetype"),
+    url("/static/minecraft-font/MinecraftBoldItalic-1y1e.otf")
+      format("truetype");
 }
 
 :root {
-    /* When you need a lighter background, just use a higher transparency (lower last value) */
-    /* Gradients for shading on background and wood  */
-    --bg-base: hsla(0, 0%, 0%, 0.75);
-    --bg-middle: hsla(0, 0%, 0%, 0.5);
-    --bg-top: hsla(0, 0%, 0%, 0.0);
-    --bg-button: hsl(35, 95%, 54%);
-    --bg-button-hover: hsl(34, 94%, 66%);
-    --focused-text: hsl(0 0% 95%);
-    --text: hsl(0 0% 60%);
-    --unfocused-text: hsl(0 0% 50%);
-    --font: "Minecraft Font", Arial, Helvetica, sans-serif;
+  /* When you need a lighter background, just use a higher transparency (lower last value) */
+  /* Gradients for shading on background and wood  */
+  --bg-base: hsla(0, 0%, 0%, 0.75);
+  --bg-middle: hsla(0, 0%, 0%, 0.5);
+  --bg-top: hsla(0, 0%, 0%, 0);
+  --bg-button: hsl(35, 95%, 54%);
+  --bg-button-hover: hsl(34, 94%, 66%);
+  --focused-text: hsl(0 0% 95%);
+  --text: hsl(0 0% 60%);
+  --unfocused-text: hsl(0 0% 50%);
+  --font: "Minecraft Font", Arial, Helvetica, sans-serif;
 }
 
 /* NOTE: for the love of all that is holy, please, please don't EVER touch the z-index*/
 body {
-    color: var(--text);
-    font-family: var(--font);
-    background-image: 
-        linear-gradient(var(--bg-base), var(--bg-base)), 
-        url("/static/images/blocks/stone.png");
-    top: 0;
-    left: 0;
-    margin: 0%;
-    height: 100%;
-    background-size: 60pt, 60pt;
-    background-repeat: repeat;
+  color: var(--text);
+  font-family: var(--font);
+  background-image:
+    linear-gradient(var(--bg-base), var(--bg-base)),
+    url("/static/images/blocks/stone.png");
+  top: 0;
+  left: 0;
+  margin: 0%;
+  height: 100%;
+  background-size: 60pt, 60pt;
+  background-repeat: repeat;
 }
 
 h1 {
-    color: var(--focused-text);
+  color: var(--focused-text);
 }
 
 button.orange {
-    background: var(--bg-button);
-    padding: 0.5rem 1rem 0.5rem 1rem;
-    color: var(--focused-text);
-    text-shadow: 0.5px 1px 2px black;
-    font-weight: 700;
-    border-radius: 0;
-    border: none;
-    font-family: var(--font);
-    box-shadow: 1px 2px 1px black;
+  background: var(--bg-button);
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  color: var(--focused-text);
+  text-shadow: 0.5px 1px 2px black;
+  font-weight: 700;
+  border-radius: 0;
+  border: none;
+  font-family: var(--font);
+  box-shadow: 1px 2px 1px black;
 }
 
 button.orange:hover {
-    color: var(--focused-text);
-    background-color: var(--bg-button-hover);
+  color: var(--focused-text);
+  background-color: var(--bg-button-hover);
 }
 
 input {
-    color: black;
-    font-family: var(--font);
+  color: black;
+  font-family: var(--font);
 }
 
 table {
-    margin: auto;
-    border-collapse: collapse;
-    width: 80%;
-    margin-top: 4em;
+  margin: auto;
+  border-collapse: collapse;
+  width: 80%;
+  margin-top: 4em;
 }
 
-th, tb {
-    border: 1px solid white;
+th,
+tb {
+  border: 1px solid white;
 }
 
 header {
-    display: block;
-    top: 0;
-    left:0;
-    height: 60pt;
-    width: 100vw;
-    position: sticky;
-    background-image:
-        linear-gradient(
-            to bottom,
-            hsla(0, 0%, 0%, 0) 0%,
-            hsla(0, 0%, 0%, 0.25) 5%,        
-            hsla(0, 0%, 0%, 0.5) 30%,        
-            hsla(0, 0%, 0%, 0.75) 90%  
-        ), 
-        url("/static/images/blocks/dirt.png");
-    background-repeat: repeat;
-    background-size: 60pt, 60pt;
-    z-index: 1;
+  display: block;
+  top: 0;
+  left: 0;
+  height: 60pt;
+  width: 100vw;
+  position: sticky;
+  background-image:
+    linear-gradient(
+      to bottom,
+      hsla(0, 0%, 0%, 0) 0%,
+      hsla(0, 0%, 0%, 0.25) 5%,
+      hsla(0, 0%, 0%, 0.5) 30%,
+      hsla(0, 0%, 0%, 0.75) 90%
+    ),
+    url("/static/images/blocks/dirt.png");
+  background-repeat: repeat;
+  background-size: 60pt, 60pt;
+  z-index: 1;
 }
 
 header .margins {
-    height: 100%;
-    margin-left: 20px;
-    margin-right: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  height: 100%;
+  margin-left: 20px;
+  margin-right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 header .logo {
-    color: var(--focused-text);
-    height: 100%;
-    font-size: 50px;
+  color: var(--focused-text);
+  height: 100%;
+  font-size: 50px;
 }
 
 header .logo button {
-    height: 100%;
-    background-color: hsla(0, 0%, 0%, 0);
-    border: none;
-    font-family: var(--font);
-    align-items: center;
+  height: 100%;
+  background-color: hsla(0, 0%, 0%, 0);
+  border: none;
+  font-family: var(--font);
+  align-items: center;
 }
 
 header .welcome {
-    height: 100%;
-    font-size: 150%;
-    align-items: center;
-    color: var(--focused-text);
+  height: 100%;
+  font-size: 150%;
+  align-items: center;
+  color: var(--focused-text);
 }
 
 header nav {
-    height: 100%;
+  height: 100%;
 }
 
-header nav li{
-    display: table;
-    height: 100%;
-    float: left;
-    margin-right: 30px;
+header nav li {
+  display: table;
+  height: 100%;
+  float: left;
+  margin-right: 30px;
 }
 
 header nav span {
-    display: table-cell;
-    vertical-align: middle;
-    justify-content: center;
+  display: table-cell;
+  vertical-align: middle;
+  justify-content: center;
 }
 
 a {
-    color: hsl(236, 88%, 80%);
-    text-decoration: none;
+  color: hsl(236, 88%, 80%);
+  text-decoration: none;
 }
 
 a:visited {
-    color: hsl(236, 88%, 80%);
-    text-decoration: none;
+  color: hsl(236, 88%, 80%);
+  text-decoration: none;
 }
 
 a.normal {
-    color: black;
-    text-decoration: none;
+  color: black;
+  text-decoration: none;
 }
 
 a.normal:visited {
-    color: black;
-    text-decoration: none;
+  color: black;
+  text-decoration: none;
 }
 
 .below-header {
-    display: flex;
-    flex-direction: column;
-    margin-left: 15pt;
-    margin-right: 15pt;
+  display: flex;
+  flex-direction: column;
+  margin-left: 15pt;
+  margin-right: 15pt;
 }
 
 .main {
-    flex: 0 0 97%;
+  flex: 0 0 97%;
 }
 
 .disclaimer {
-    display: flex;
-    flex: 0 0 3%;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex: 0 0 3%;
+  justify-content: center;
+  align-items: center;
 }
 
 .store-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120pt, 1fr));
-    gap: 20px;
-    padding: 20px;
-    background-image: 
-        linear-gradient(var(--bg-middle), var(--bg-middle)),
-        url("images/blocks/log.png");
-    background-repeat: repeat;
-    background-size: 60pt, 60pt;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120pt, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-image:
+    linear-gradient(var(--bg-middle), var(--bg-middle)),
+    url("images/blocks/log.png");
+  background-repeat: repeat;
+  background-size: 60pt, 60pt;
 }
 
 .store-item {
-    text-align: center;
-    padding: 10px;
-    background-image:
-        linear-gradient(var(--bg-top), var(--bg-top)),
-        url("images/blocks/planks.png");
-    background-repeat: repeat;
-    background-size: 60pt, 60pt;
-    color: black;
+  text-align: center;
+  padding: 10px;
+  background-image:
+    linear-gradient(var(--bg-top), var(--bg-top)),
+    url("images/blocks/planks.png");
+  background-repeat: repeat;
+  background-size: 60pt, 60pt;
+  color: black;
 }
 
 .store-item .text {
-    margin: 0;
-    height: 48px;
-    line-height: 100%;
-    font-weight: 500;
+  margin: 0;
+  height: 48px;
+  line-height: 100%;
+  font-weight: 500;
 }
 
 .price-text {
-    color: hsl(143, 88%, 60%);
-    /* from https://stackoverflow.com/questions/4919076/outline-effect-to-text */
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  color: hsl(143, 88%, 60%);
+  /* from https://stackoverflow.com/questions/4919076/outline-effect-to-text */
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .price {
-    transform: translateY(+2px);
-    height: 16px;
+  transform: translateY(+2px);
+  height: 16px;
 }
 
 .item {
-    /* We might want to make a script that upscales the images or do it some other way, 
-    they're just too small */
-    width: 64px;
+  width: 64px;
 }
 
 .cart-fixer {
-    height: 100%;
-    width: 100%;
-    display: grid;
-    place-items: center;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  place-items: center;
 }
 
 .cart-table {
-    display: table;
-    border-spacing: 15px;
-    width: 70vw;
-    background-image:
-        linear-gradient(var(--bg-middle), var(--bg-middle)),
-        url("images/blocks/log.png");
-    background-repeat: repeat;
-    background-size: 60pt, 60pt;
+  display: table;
+  border-spacing: 15px;
+  width: 70vw;
+  background-image:
+    linear-gradient(var(--bg-middle), var(--bg-middle)),
+    url("images/blocks/log.png");
+  background-repeat: repeat;
+  background-size: 60pt, 60pt;
 }
 
 .cart-row {
-    display: table-row;
-    padding: 10px;
-    background-image:
-        linear-gradient(var(--bg-top), var(--bg-top)),
-        url("images/blocks/planks.png");
-    background-repeat: repeat;
-    background-size: 60pt, 60pt;
-    color: black;
+  display: table-row;
+  padding: 10px;
+  background-image:
+    linear-gradient(var(--bg-top), var(--bg-top)),
+    url("images/blocks/planks.png");
+  background-repeat: repeat;
+  background-size: 60pt, 60pt;
+  color: black;
 }
 
 .cart-cell {
-    text-align: center;
-    vertical-align: middle;
-    display: table-cell;
-    padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
+  padding: 10px;
 }
