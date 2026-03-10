@@ -339,41 +339,47 @@ def checkout():
     user_id = session.get("id", None)
     conn = get_conn()
     cur = conn.cursor()
-    # Magical query, it creates a new checkout and also copies the values from the active
-    # users in_cart to checkout_items.
     cur.execute(
-        """
-        WITH new_checkout AS (
-            INSERT INTO checkout (user_id) VALUES (%s) RETURNING checkout_id
-        )
-        INSERT INTO checkout_items (checkout_id, product_id, quantity)
-        SELECT n.checkout_id, i.product_id, i.quantity
-        FROM in_cart i
-        JOIN products p ON p.product_id = i.product_id
-        CROSS JOIN new_checkout n
-        WHERE i.user_id = %s
-    """,
-        (user_id, user_id),
-    )
-    # Clear the users cart.
-    cur.execute("DELETE FROM in_cart WHERE user_id = %s", (user_id,))
-    # Calculate the total price and add it to checkout.
-    # NOTE: This could probably be done in the first query, but we'll figure that out later
-    # to avoid flabbergasting me completely!
-    cur.execute(
-        # NOTE: The total price is the sum of all ci.quantity * p.price.
-        """
-        UPDATE checkout c 
-        SET total_price = (
-            SELECT SUM(ci.quantity * p.price)
-            FROM checkout_items ci
-            JOIN products p ON p.product_id = ci.product_id
-            WHERE ci.checkout_id = c.checkout_id
-        )
-        WHERE user_id = %s
-    """,
+        "SELECT * FROM in_cart WHERE user_id = %s",
         (user_id,),
     )
+    test = cur.fetchone()
+    # Magical query, it creates a new checkout and also copies the values from the active
+    # users in_cart to checkout_items.
+    if test:
+        cur.execute(
+            """
+            WITH new_checkout AS (
+                INSERT INTO checkout (user_id) VALUES (%s) RETURNING checkout_id
+            )
+            INSERT INTO checkout_items (checkout_id, product_id, quantity)
+            SELECT n.checkout_id, i.product_id, i.quantity
+            FROM in_cart i
+            JOIN products p ON p.product_id = i.product_id
+            CROSS JOIN new_checkout n
+            WHERE i.user_id = %s
+        """,
+            (user_id, user_id),
+        )
+        # Clear the users cart.
+        cur.execute("DELETE FROM in_cart WHERE user_id = %s", (user_id,))
+        # Calculate the total price and add it to checkout.
+        # NOTE: This could probably be done in the first query, but we'll figure that out later
+        # to avoid flabbergasting me completely!
+        cur.execute(
+            # NOTE: The total price is the sum of all ci.quantity * p.price.
+            """
+            UPDATE checkout c 
+            SET total_price = (
+                SELECT SUM(ci.quantity * p.price)
+                FROM checkout_items ci
+                JOIN products p ON p.product_id = ci.product_id
+                WHERE ci.checkout_id = c.checkout_id
+            )
+            WHERE user_id = %s
+        """,
+            (user_id,),
+        )
 
     conn.commit()
     cur.close()
